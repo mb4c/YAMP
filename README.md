@@ -8,7 +8,7 @@ YAMP is a cross-platform music player written in C++.
 - Playlists
 - Themes
 - Unicode support
-- Cross-platform, works on Linux, and Windows(WIP)
+- Cross-platform, works on Linux, FreeBSD, Windows(WIP)
 
 # Planned Features
 - Support for additional audio formats (M4A, AAC, OGG)

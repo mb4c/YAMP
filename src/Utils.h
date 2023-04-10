@@ -3,6 +3,7 @@
 #include <string>
 #include <csignal>
 #include <pwd.h>
+#include <unistd.h>
 
 inline std::string GetMusicFolderPath()
 {
