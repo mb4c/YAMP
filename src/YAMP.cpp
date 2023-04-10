@@ -11,10 +11,10 @@ YAMP::YAMP(const std::string &title, int width, int height, bool vsync) : Applic
 void YAMP::OnInit()
 {
 	m_Preferences.Load();
+	m_Player.m_Library.m_LibraryPath = m_Preferences.m_LibraryPath;
 	m_Player.m_Library.Load();
 	m_Player.m_Library.LoadPlaylists();
 	m_Player.Init("res/start.wav", true);
-	m_Player.m_Library.m_LibraryPath = m_Preferences.m_LibraryPath;
 	m_Themes.ScanThemes();
 	m_Themes.LoadThemeFromName(m_Preferences.m_Theme);
 
@@ -109,7 +109,6 @@ void YAMP::Dockspace()
 		ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
         ImGui::DockSpace(dockspace_id);
 
-
         if (ImGui::BeginMenuBar())
             {
                 if (ImGui::BeginMenu("Library"))
@@ -118,6 +117,11 @@ void YAMP::Dockspace()
 					{
 						std::thread libraryThread([&]() {
 							m_Player.m_Library.Scan();
+							m_Player.m_Library.Load();
+							m_Player.m_Library.LoadPlaylists();
+							m_SearchArtists = Search(m_ArtistSearchbar, m_Player.m_Library.m_Artists);
+							FilterAlbum();
+							FilterTracks();
 						});
 						libraryThread.detach();
 					}
