@@ -522,12 +522,27 @@ void YAMP::PreferencesPanel()
 {
     if (ImGui::BeginPopupModal("Preferences",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.25f);
-        ImGui::InputFloat("Font size", &m_Preferences.m_FontSize);
-        ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.6f);
-        ImGui::InputText("Library path", &m_Preferences.m_LibraryPath);	//TODO: File explorer for selecting library path
+		ImGui::Text("FontSize");
+		ImGui::SameLine();
+        ImGui::InputFloat("##", &m_Preferences.m_FontSize);
+		ImGui::Text("Library path");
+		ImGui::SameLine();
+        ImGui::InputText("##", &m_Preferences.m_LibraryPath);
+		ImGui::SameLine();
+		if(ImGui::Button("Select..."))
+		{
+			auto selection = pfd::select_folder("Select a folder").result();
+			if (!selection.empty())
+			{
+				m_Preferences.m_LibraryPath = selection;
+				m_Player.m_Library.m_LibraryPath = selection;
+				std::cout << "User selected folder " << selection << "\n";
+			}
+		}
 
 		std::string current_item = m_Preferences.m_Theme;
+		ImGui::Text("Theme");
+		ImGui::SameLine();
 
 		if (ImGui::BeginCombo("##combo", current_item.c_str()))
 		{

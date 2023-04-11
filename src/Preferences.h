@@ -15,5 +15,5 @@ public:
     float m_Scale = 1;
 	float m_Volume = 1;
     std::string m_LibraryPath = GetMusicFolderPath();
-	std::string m_Theme;
+	std::string m_Theme = "Dark";
 };
