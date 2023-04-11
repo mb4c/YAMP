@@ -9,6 +9,7 @@
 #include <thread>
 #include <imgui_internal.h>
 #include <Application.h>
+#include "portable-file-dialogs.h"
 
 class YAMP : public Application
 {
