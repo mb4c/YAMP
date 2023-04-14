@@ -463,6 +463,11 @@ void YAMP::TracksPanel()
 						{
 							OpenInFileExplorer(m_FilteredSongs[row_n].path);
 						}
+						if (ImGui::MenuItem("Select album"))
+						{
+							m_Player.m_Library.m_SelectedAlbum = m_FilteredSongs[row_n].album;
+							FilterTracks();
+						}
 					}
 					else
 					{
