@@ -1,5 +1,4 @@
 #include "Library.h"
-
 using namespace nlohmann;
 
 void Library::Scan()
@@ -22,24 +21,32 @@ void Library::Scan()
         {
             if (entry.is_regular_file())
             {
-                if (entry.path().extension() == ".mp3" || entry.path().extension() == ".flac")
+                if (entry.path().extension() == ".mp3" || entry.path().extension() == ".flac" || entry.path().extension() == ".wav")
                 {
                     TagLib::FileRef f(entry.path().string().c_str());
                     if(!f.isNull())
                     {
+						bool hasTitleMetadata = false;
                         Song song;
                         song.path = entry.path().u8string();
                         song.title = f.tag()->title().to8Bit(true);
                         if (song.title.empty())
+						{
 							song.title = song.path.stem().string();
-                        song.artist = f.tag()->artist().to8Bit(true);
-						if (song.artist.empty())
-							song.artist = "No artist";
-                        song.album = f.tag()->album().to8Bit(true);
+							if(GetMetadataFromTitle(song.title, &song.track, &song.artist,&song.title))
+								hasTitleMetadata = true;
+						}
+						if (!hasTitleMetadata)
+						{
+							song.artist = f.tag()->artist().to8Bit(true);
+							if (song.artist.empty())
+								song.artist = "No artist";
+							song.track = f.tag()->track();
+						}
+						song.album = f.tag()->album().to8Bit(true);
 						if (song.album.empty())
 							song.album = "No album";
                         song.year = f.tag()->year();
-                        song.track = f.tag()->track();
                         song.genre = f.tag()->genre().to8Bit(true);
                         song.duration = f.audioProperties()->lengthInSeconds();
                         song.uuid = song.path;
@@ -55,7 +62,6 @@ void Library::Scan()
     } else
     {
         std::cout << "Library folder does not exist" << std::endl;
-
     }
 
 	Save();
