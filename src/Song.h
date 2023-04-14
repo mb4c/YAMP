@@ -10,7 +10,7 @@ public:
 	unsigned int year;
 	unsigned int track;
 	std::string genre;
-	std::string path;
+	std::filesystem::path path;
 	int duration;
     std::string uuid;
 };

@@ -235,7 +235,7 @@ void YAMP::StatusPanel()
 	std::stringstream ss;
 	ss << std::fixed << std::setprecision(0) << round(m_Player.m_Volume * 100) << "%%";
 
-    if(ImGui::SliderFloat("##", &m_Player.m_Volume, 0.0f, 1.0f, ss.str().c_str()))
+    if(ImGui::SliderFloat("##volume", &m_Player.m_Volume, 0.0f, 1.0f, ss.str().c_str()))
     {
         m_Player.SetVolume(m_Player.m_Volume);
 		m_Preferences.m_Volume = m_Player.m_Volume;
@@ -459,6 +459,10 @@ void YAMP::TracksPanel()
 							}
 							ImGui::EndMenu();
 						}
+						if (ImGui::MenuItem("Open in file explorer"))
+						{
+							OpenInFileExplorer(m_FilteredSongs[row_n].path);
+						}
 					}
 					else
 					{
@@ -524,10 +528,10 @@ void YAMP::PreferencesPanel()
     {
 		ImGui::Text("FontSize");
 		ImGui::SameLine();
-        ImGui::InputFloat("##", &m_Preferences.m_FontSize);
+        ImGui::InputFloat("##font", &m_Preferences.m_FontSize);
 		ImGui::Text("Library path");
 		ImGui::SameLine();
-        ImGui::InputText("##", &m_Preferences.m_LibraryPath);
+        ImGui::InputText("##librarypath", &m_Preferences.m_LibraryPath);
 		ImGui::SameLine();
 		if(ImGui::Button("Select..."))
 		{

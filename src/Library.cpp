@@ -114,7 +114,8 @@ void Library::Load()
 		s.year = song["year"];
 		s.track = song["track"];
 		s.genre = song["genre"];
-		s.path = song["path"];
+		std::string pathstr = song["path"];
+		s.path = pathstr;
 		s.duration = song["duration"];
 		s.uuid = song["uuid"];
 		m_Songs.push_back(s);
