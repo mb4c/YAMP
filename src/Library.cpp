@@ -31,7 +31,7 @@ void Library::Scan()
                         song.path = entry.path().u8string();
                         song.title = f.tag()->title().to8Bit(true);
                         if (song.title.empty())
-                            song.title = "No title";
+							song.title = song.path.stem().string();
                         song.artist = f.tag()->artist().to8Bit(true);
 						if (song.artist.empty())
 							song.artist = "No artist";
