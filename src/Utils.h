@@ -4,6 +4,7 @@
 #include <csignal>
 #include <pwd.h>
 #include <unistd.h>
+#include <filesystem>
 
 inline std::string GetMusicFolderPath()
 {
@@ -82,4 +83,12 @@ inline std::string SecondsToTimeHMS(int seconds, bool longFormat = false)
 		timeStr += std::to_string(s) + "s ";
 
 	return timeStr;
+}
+
+inline void OpenInFileExplorer(std::filesystem::path path)
+{
+#ifdef __unix__
+	std::string command = "xdg-open \"" + path.parent_path().string() + "\"";
+	system(command.c_str());
+#endif
 }
