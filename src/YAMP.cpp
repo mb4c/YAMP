@@ -2,7 +2,6 @@
 #include <iostream>
 //#define MA_DEBUG_OUTPUT
 #define MINIAUDIO_IMPLEMENTATION
-#include "miniaudio.h"
 
 YAMP::YAMP(const std::string &title, int width, int height, bool vsync) : Application(title, width, height, vsync)
 {
@@ -14,7 +13,8 @@ void YAMP::OnInit()
 	m_Player.m_Library.m_LibraryPath = m_Preferences.m_LibraryPath;
 	m_Player.m_Library.Load();
 	m_Player.m_Library.LoadPlaylists();
-	m_Player.Init("res/start.wav", true);
+
+	m_Player.Init(std::filesystem::absolute("res/start.wav").string(), true);
 	m_Themes.ScanThemes();
 	m_Themes.LoadThemeFromName(m_Preferences.m_Theme);
 
@@ -192,13 +192,13 @@ void YAMP::StatusPanel()
     static double min = 0;
     static double max = 1;
 
-    if (cursor >= 1)
-    {
-        if (m_Repeat)
-            m_Player.SetCursor(0);
-        else
-            m_Player.Next();
-    }
+	if (m_Player.GetEOS())
+	{
+		if (m_Repeat)
+			m_Player.SetCursor(0);
+		else
+			m_Player.Next();
+	}
 
     if(ImGui::SliderScalar("##Progress", ImGuiDataType_Double, &cursor, &min, &max, ""))
     {
