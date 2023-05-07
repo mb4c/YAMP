@@ -4,24 +4,22 @@ YAMP is a cross-platform music player written in C++.
 <img src="YAMP.png">
 
 # Features
-- Supports MP3, FLAC and WAV
+- Supports most audio formats
 - Playlists
 - Themes
 - Unicode support
-- Cross-platform, works on Linux, FreeBSD, Windows(WIP)
+- Cross-platform, works on Linux, FreeBSD
 
 # Planned Features
-- Support for additional audio formats (M4A, AAC, OGG)
 - Integration with streaming services (Spotify)
 - Plugins
 - Customizable hotkeys
-- Support for multiple languages
 
 # Building
 
 #### Clone repository
 ```
-git clone --recurse-submodules <repo url>
+git clone --recurse-submodules https://github.com/mb4c/YAMP
 ``` 
 
 #### Linux
@@ -33,11 +31,6 @@ cmake ..
 make
 ```
 
-#### Windows
-
-```
-WIP
-```
 
 # License
 
