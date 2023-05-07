@@ -61,7 +61,7 @@ float Player::GetVolume()
 	return vol;
 }
 
-float Player::GetLengthInSeconds()
+double Player::GetLengthInSeconds()
 {
 	return static_cast<double>(GetLength()) / 1000000000.0;
 }
@@ -73,7 +73,7 @@ uint64_t Player::GetLength()
 	return length;
 }
 
-float Player::GetCursorInSeconds()
+double Player::GetCursorInSeconds()
 {
 	return static_cast<double>(GetCursor()) / 1000000000.0;
 }

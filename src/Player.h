@@ -19,9 +19,9 @@ public:
     void Play();
     void SetVolume(float volume);
     float GetVolume();
-	float GetLengthInSeconds();
+	double GetLengthInSeconds();
     uint64_t GetLength();
-    float GetCursorInSeconds();
+    double GetCursorInSeconds();
     uint64_t GetCursor();
     void SetCursor(uint64_t cursor);
     void SetPlaylist(Playlist playlist);
