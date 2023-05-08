@@ -490,12 +490,12 @@ void YAMP::TracksPanel()
 
                 if (ImGui::BeginPopupModal("Create playlist",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
                 {
-                    ImGui::InputText("Name", m_NewPlayListName, IM_ARRAYSIZE(m_NewPlayListName));
-
+                    ImGui::InputTextWithHint("Name", "Name", m_NewPlayListName, IM_ARRAYSIZE(m_NewPlayListName));
                     if (ImGui::Button("Create"))
                     {
                         Playlist playlist;
                         playlist.name = m_NewPlayListName;
+						memset(&m_NewPlayListName[0], 0, sizeof(m_NewPlayListName));
                         playlist.songs.push_back(m_FilteredSongs.at(row_n));
 						playlist.duration += m_FilteredSongs.at(row_n).duration;
 						m_Player.m_Library.m_Playlists.push_back(playlist);
