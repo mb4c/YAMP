@@ -24,8 +24,11 @@ void Player::Init(const std::string& filePath, bool startup)
 	/* Set the pipeline to play */
 	gst_element_set_state(m_Playbin, GST_STATE_PLAYING);
 
+	m_Data.main_loop = m_GstLoop;
+	m_Data.playbin = m_Playbin;
+	m_Data.eos = false;
 	/* Start the GStreamer thread */
-	m_GstThread = std::thread(GstThread, m_Playbin, m_GstLoop);
+	m_GstThread = std::thread(GstThread, m_Playbin, m_GstLoop, &m_Data);
 	m_Startup = startup;
 
     UpdateTitle();
@@ -158,63 +161,17 @@ void Player::Stop()
 
 bool Player::GetEOS()
 {
-	GstFormat fmt = GST_FORMAT_TIME;
-	gint64 pos, duration;
-
-// Query the position and duration of the element
-	if (!gst_element_query_position(m_Playbin, fmt, &pos) ||
-		!gst_element_query_duration(m_Playbin, fmt, &duration)) {
-		g_warning("Could not query position or duration of element");
-		return false;
-	}
-
-// Check if the element has reached the end of the stream
-	if (pos >= duration) {
-		g_message("Element has reached end of stream");
-		return true;
-
-	} else {
-		return false;
-	}
+	return m_Data.eos;
 }
 
-void Player::GstThread(GstElement *pipeline, GMainLoop *loop)
+void Player::GstThread(GstElement *pipeline, GMainLoop *loop, GstData* data)
 {
 	GstBus *bus;
-	GstMessage *msg;
+//	GstMessage *msg;
+
 	/* Add a bus watch to the main context */
 	bus = gst_element_get_bus(pipeline);
-	gst_bus_add_watch(bus, [](GstBus *bus, GstMessage *message, gpointer data) -> gboolean {
-		GError *err;
-		gchar *debug_info;
-		switch (GST_MESSAGE_TYPE (message)) {
-			case GST_MESSAGE_ERROR:
-				gst_message_parse_error (message, &err, &debug_info);
-				g_printerr ("Error received from element %s: %s\n", GST_OBJECT_NAME (message->src), err->message);
-				g_printerr ("Debugging information: %s\n", debug_info ? debug_info : "none");
-				g_clear_error (&err);
-				g_free (debug_info);
-//				g_main_loop_quit (data->main_loop);
-				break;
-			case GST_MESSAGE_EOS:
-				g_print ("End-Of-Stream reached.\n");
-//				g_main_loop_quit (data->main_loop);
-				break;
-			case GST_MESSAGE_STATE_CHANGED: {
-				GstState old_state, new_state, pending_state;
-				gst_message_parse_state_changed (message, &old_state, &new_state, &pending_state);
-//				if (GST_MESSAGE_SRC (message) == GST_OBJECT (data->playbin)) {
-//					if (new_state == GST_STATE_PLAYING) {
-//						/* Once we are in the playing state, analyze the streams */
-////						analyze_streams (data);
-//					}
-//				}
-			} break;
-		}
-
-		/* We want to keep receiving messages */
-		return TRUE;
-	}, loop);
+	gst_bus_add_watch (bus, (GstBusFunc) HandleMessages, data);
 
 	/* Start the main loop */
 	g_main_loop_run(loop);
@@ -222,3 +179,41 @@ void Player::GstThread(GstElement *pipeline, GMainLoop *loop)
 	/* Free resources */
 	gst_object_unref(bus);
 }
+
+gboolean Player::HandleMessages(GstBus *bus, GstMessage *msg, GstData *data)
+{
+	GError *err;
+	gchar *debug_info;
+
+	switch (GST_MESSAGE_TYPE (msg))
+	{
+		case GST_MESSAGE_ERROR:
+			gst_message_parse_error (msg, &err, &debug_info);
+//			g_printerr ("Error received from element %s: %s\n", GST_OBJECT_NAME (msg->src), err->message);
+			g_printerr ("Debugging information: %s\n", debug_info ? debug_info : "none");
+			g_clear_error (&err);
+			g_free (debug_info);
+//				g_main_loop_quit (data->main_loop);
+			break;
+		case GST_MESSAGE_EOS:
+			g_print ("End-Of-Stream reached.\n");
+			if (data != nullptr)
+			{
+				data->eos = true;
+			}
+//			g_main_loop_quit (data->main_loop);
+			break;
+//		case GST_MESSAGE_STATE_CHANGED: {
+////			GstState old_state, new_state, pending_state;
+////			gst_message_parse_state_changed (msg, &old_state, &new_state, &pending_state);
+////			if (GST_MESSAGE_SRC (msg) == GST_OBJECT (data->playbin)) {
+////				if (new_state == GST_STATE_PLAYING) {
+////					/* Once we are in the playing state, analyze the streams */
+//////					analyze_streams (data);
+////				}
+//			}
+//		} break;
+	}
+	return true;
+}
+
