@@ -86,5 +86,4 @@ private:
 
 public:
     YAMP(const std::string &title, int width, int height, bool vsync);
-//    void Run();
 };
