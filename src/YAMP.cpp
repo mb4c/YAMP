@@ -613,7 +613,8 @@ void YAMP::PlaylistsPanel()
 				sorts_specs->SpecsDirty = false;
 			}
 
-		bool popup = false;
+		bool playlistRenamePopup = false;
+		bool playlistInfoPopup = false;
 
         ImGuiListClipper clipper;
         clipper.Begin(m_Player.m_Library.m_Playlists.size());
@@ -657,17 +658,27 @@ void YAMP::PlaylistsPanel()
 
 					if(ImGui::Selectable("Rename"))
 					{
-						popup = true;
+						playlistRenamePopup = true;
 						strcpy(m_NewPlayListName, m_Player.m_Library.m_Playlists.at(row_n).name.c_str());
+					}
+
+					if(ImGui::Selectable("Info"))
+					{
+						playlistInfoPopup = true;
 					}
 
 					ImGui::EndPopup();
 				}
 
-				if (popup)
+				if (playlistRenamePopup)
 				{
 					ImGui::OpenPopup("Rename playlist");
-					popup = false;
+					playlistRenamePopup = false;
+				}
+				if (playlistInfoPopup)
+				{
+					ImGui::OpenPopup("Info");
+					playlistInfoPopup = false;
 				}
 
 				if (ImGui::BeginPopupModal("Rename playlist",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
@@ -683,6 +694,20 @@ void YAMP::PlaylistsPanel()
 
 					ImGui::SameLine();
 					if (ImGui::Button("Cancel"))
+					{
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndPopup();
+				}
+
+				if (ImGui::BeginPopupModal("Info",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					ImGui::Text("Playlist name: %s", playlist.name.c_str());
+					ImGui::Text("Songs: %zu", playlist.songs.size());
+					ImGui::Text("Total duration: %s", SecondsToTimeHMS(playlist.duration).c_str());
+
+					ImGui::SameLine();
+					if (ImGui::Button("Close"))
 					{
 						ImGui::CloseCurrentPopup();
 					}
