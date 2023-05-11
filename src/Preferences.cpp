@@ -1,7 +1,7 @@
 #include <fstream>
 #include "Preferences.h"
 #include "json.hpp"
-
+#include "Log.h"
 using namespace nlohmann;
 
 void Preferences::Save()
@@ -18,6 +18,8 @@ void Preferences::Save()
     std::ofstream o("res/preferences.json");
     o << json;
     o.close();
+
+	LOG_TRACE("Preferences saved");
 }
 
 void Preferences::Load()
@@ -38,4 +40,6 @@ void Preferences::Load()
     m_LibraryPath = json["LibraryPath"];
 	m_Volume = json["Volume"];
 	m_Theme = json["Theme"];
+
+	LOG_TRACE("Preferences loaded");
 }

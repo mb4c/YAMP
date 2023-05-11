@@ -13,7 +13,7 @@ void Player::Init(const std::string& filePath, bool startup)
 	file = "file://";
 	file.append(filePath);
 
-	std::cout << filePath << std::endl;
+	LOG_TRACE("Initializing file: {}", filePath);
 	/* Create the pipeline */
 	m_Playbin = gst_element_factory_make ("playbin", "playbin");
 	g_object_set (m_Playbin, "uri", file.c_str(), NULL);
@@ -196,7 +196,7 @@ gboolean Player::HandleMessages(GstBus *bus, GstMessage *msg, GstData *data)
 //				g_main_loop_quit (data->main_loop);
 			break;
 		case GST_MESSAGE_EOS:
-			g_print ("End-Of-Stream reached.\n");
+//			g_print ("End-Of-Stream reached.\n");
 			if (data != nullptr)
 			{
 				data->eos = true;

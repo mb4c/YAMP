@@ -13,6 +13,7 @@
 #include "json.hpp"
 #include "Song.h"
 #include "Playlist.h"
+#include "Log.h"
 
 #include "Utils.h"
 #include "imgui_notify.h"

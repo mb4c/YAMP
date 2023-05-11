@@ -55,13 +55,13 @@ void Library::Scan()
 
                     }
                     if(f.isNull())
-                        std::cout << "Cannot open file: file is null" << std::endl;
+						LOG_ERROR("Cannot open file: file is null");
                 }
             }
         }
     } else
     {
-        std::cout << "Library folder does not exist" << std::endl;
+		LOG_ERROR("Library folder does not exist");
     }
 
 	Save();
@@ -97,7 +97,7 @@ void Library::Save()
 	std::ofstream o("res/library.json");
 	o << j;
 	o.close();
-
+	LOG_TRACE("Library saved");
 }
 
 void Library::Load()
@@ -126,8 +126,10 @@ void Library::Load()
 		s.uuid = song["uuid"];
 		m_Songs.push_back(s);
 	}
-	std::cout << "Total songs: " << m_Songs.size() << std::endl;
+	LOG_TRACE("Total songs: {}", m_Songs.size());
 	GenerateAlbums();
+	LOG_TRACE("Library loaded");
+
 }
 
 void Library::GenerateAlbums()
@@ -177,6 +179,7 @@ void Library::SavePlaylists()
 	o << j;
 	o.close();
 
+	LOG_TRACE("Playlists saved");
 }
 
 void Library::LoadPlaylists()
@@ -204,6 +207,7 @@ void Library::LoadPlaylists()
 
 		m_Playlists.push_back(pl);
 	}
+	LOG_TRACE("Playlists loaded");
 }
 
 Song Library::UUID2Song(const std::string& id)

@@ -6,6 +6,7 @@ Application::Application(const std::string& title, int width, int height, bool v
 	m_Width = width;
 	m_Height = height;
 	m_Vsync = vsync;
+	spdlog::set_level(spdlog::level::trace);
 
 }
 
@@ -13,7 +14,7 @@ void Application::Run()
 {
 	if (!glfwInit())
 	{
-		fprintf(stderr, "Failed to init GLFW\n");
+		LOG_CRITICAL("Failed to init GLFW");
 		return;
 	}
 
@@ -21,13 +22,13 @@ void Application::Run()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	printf("GLFW version: %s\n", glfwGetVersionString());
-
+//	printf("GLFW version: %s\n", glfwGetVersionString());
+	LOG_TRACE("GLFW version: {}", glfwGetVersionString());
 	m_Window = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), nullptr, nullptr);
 
 	if (m_Window == nullptr)
 	{
-		fprintf(stderr, "Failed to create GLFW window");
+		LOG_CRITICAL("Failed to create GLFW window");
 		return;
 	}
 
@@ -42,19 +43,18 @@ void Application::Run()
 
 		glViewport(0, 0, width, height);
 
-		printf("Resized %d, %d\n", data->m_Width, data->m_Height);
+		LOG_TRACE("Resized {} x {}", data->m_Width, data->m_Height);
 	});
 
 	glfwMakeContextCurrent(m_Window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		fprintf(stderr, "Failed to init GLAD\n");
+		LOG_CRITICAL("Failed to init GLAD");
 		return;
 	}
 
-	printf("OpenGL version: %s\n", glGetString(GL_VERSION));
-
+	LOG_TRACE("OpenGL version: {}", *glGetString(GL_VERSION));
 	glfwSwapInterval(m_Vsync);
 
 	IMGUI_CHECKVERSION();

@@ -1,4 +1,5 @@
 #include "YAMP.h"
+#include "Log.h"
 #include <iostream>
 
 
@@ -557,7 +558,7 @@ void YAMP::PreferencesPanel()
 			{
 				m_Preferences.m_LibraryPath = selection;
 				m_Player.m_Library.m_LibraryPath = selection;
-				std::cout << "User selected folder " << selection << "\n";
+				LOG_TRACE("User selected folder: {}", selection);
 			}
 		}
 

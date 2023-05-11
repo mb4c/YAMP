@@ -17,6 +17,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libs/taglib/taglib/taglib_config.h.cm
 add_subdirectory("libs/glfw")
 add_subdirectory("libs/taglib")
 
+find_package(spdlog REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(gtk3 REQUIRED IMPORTED_TARGET gtk+-3.0)
 pkg_search_module(gstreamer REQUIRED IMPORTED_TARGET gstreamer-1.0>=1.4)
@@ -25,6 +26,7 @@ pkg_search_module(gstreamer-app REQUIRED IMPORTED_TARGET gstreamer-app-1.0>=1.4)
 pkg_search_module(gstreamer-video REQUIRED IMPORTED_TARGET gstreamer-video-1.0>=1.4)
 pkg_search_module(gstreamer-plugins-base REQUIRED IMPORTED_TARGET gstreamer-plugins-base-1.0>=1.4)
 pkg_search_module(gstreamer-audio REQUIRED IMPORTED_TARGET gstreamer-audio-1.0>=1.4)
+
 
 
 include_directories(SYSTEM src/
@@ -88,7 +90,8 @@ target_link_libraries(${PROJECT_NAME} glfw tag
                         PkgConfig::gstreamer-app
                         PkgConfig::gstreamer-video
                         PkgConfig::gstreamer-audio
-                        PkgConfig::gstreamer-plugins-base)
+                        PkgConfig::gstreamer-plugins-base
+                        spdlog::spdlog)
 
 set(SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/res")
 set(DESTINATION_PATH "${CMAKE_CURRENT_BINARY_DIR}/res")
