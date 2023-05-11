@@ -58,8 +58,12 @@ private:
 	void PlaylistsPanel();
 	void FilterAlbum();
 	void FilterTracks();
-	static std::vector<std::string> Search(std::string searchText, const std::vector<std::string>& strings);
 
+	std::vector<Song> GetSongsFromAlbumName(const std::string& name);
+	void OpenNewPlaylistModal(int index, bool open, bool isAlbum);
+	void AddSongToPlaylist(Playlist* playlist, int index);
+	void AddAlbumToPlaylist(Playlist* playlist, const std::string& albumName);
+	static std::vector<std::string> Search(std::string searchText, const std::vector<std::string>& strings);
 	template<typename T> void Reorder(std::vector<T>& vec, int index);
 
 	static int ComparePlaylist(const Playlist& lhs, const Playlist& rhs);
