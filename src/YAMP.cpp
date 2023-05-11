@@ -1,7 +1,6 @@
 #include "YAMP.h"
 #include <iostream>
-//#define MA_DEBUG_OUTPUT
-#define MINIAUDIO_IMPLEMENTATION
+
 
 YAMP::YAMP(const std::string &title, int width, int height, bool vsync) : Application(title, width, height, vsync)
 {
@@ -23,6 +22,7 @@ void YAMP::OnInit()
 	ImGuiIO& io = ImGui::GetIO();
 	io.IniFilename = "res/imgui.ini";
 
+	//TODO: wypierdolić te fonty do funkcji
 	ImVector<ImWchar> ranges;
 	ImFontGlyphRangesBuilder builder;
 	builder.AddText("ąężźćłóśń ĄĘŻŹĆŁÓŚŃ áčďéěíňóřšťúůýž ÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ”");
