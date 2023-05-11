@@ -1,8 +1,6 @@
 #include "YAMP.h"
 #include <iostream>
-//#define MA_DEBUG_OUTPUT
-#define MINIAUDIO_IMPLEMENTATION
-#include "miniaudio.h"
+
 
 YAMP::YAMP(const std::string &title, int width, int height, bool vsync) : Application(title, width, height, vsync)
 {
@@ -14,7 +12,8 @@ void YAMP::OnInit()
 	m_Player.m_Library.m_LibraryPath = m_Preferences.m_LibraryPath;
 	m_Player.m_Library.Load();
 	m_Player.m_Library.LoadPlaylists();
-	m_Player.Init("res/start.wav", true);
+
+	m_Player.Init(std::filesystem::absolute("res/start.wav").string(), true);
 	m_Themes.ScanThemes();
 	m_Themes.LoadThemeFromName(m_Preferences.m_Theme);
 
@@ -23,6 +22,7 @@ void YAMP::OnInit()
 	ImGuiIO& io = ImGui::GetIO();
 	io.IniFilename = "res/imgui.ini";
 
+	//TODO: wypierdolić te fonty do funkcji
 	ImVector<ImWchar> ranges;
 	ImFontGlyphRangesBuilder builder;
 	builder.AddText("ąężźćłóśń ĄĘŻŹĆŁÓŚŃ áčďéěíňóřšťúůýž ÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ”");
@@ -192,13 +192,13 @@ void YAMP::StatusPanel()
     static double min = 0;
     static double max = 1;
 
-    if (cursor >= 1)
-    {
-        if (m_Repeat)
-            m_Player.SetCursor(0);
-        else
-            m_Player.Next();
-    }
+	if (m_Player.GetEOS())
+	{
+		if (m_Repeat)
+			m_Player.SetCursor(0);
+		else
+			m_Player.Next();
+	}
 
     if(ImGui::SliderScalar("##Progress", ImGuiDataType_Double, &cursor, &min, &max, ""))
     {
@@ -368,6 +368,43 @@ void YAMP::AlbumPanel()
 
 					FilterTracks();
                 }
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+				{
+					ImGui::OpenPopup("AlbumPopup");
+				}
+				bool popup = false;
+
+				if (ImGui::BeginPopup("AlbumPopup"))
+				{
+					if (ImGui::BeginMenu("Add to playlist"))
+					{
+						if (ImGui::MenuItem("Create new..."))
+						{
+							popup = true;
+						}
+
+						for (auto &playlist: m_Player.m_Library.m_Playlists)
+						{
+							if (ImGui::MenuItem(playlist.name.c_str()))
+							{
+								AddAlbumToPlaylist(&playlist, album);
+								m_Player.m_Library.SavePlaylists();
+							}
+						}
+						ImGui::EndMenu();
+					}
+					//TODO: open in file explorer
+
+//						if (ImGui::MenuItem("Open in file explorer"))
+//						{
+//							OpenInFileExplorer(m_FilteredSongs[row_n].path);
+//						}
+
+					ImGui::EndPopup();
+				}
+				OpenNewPlaylistModal(row_n, popup, true);
+
                 ImGui::PopID();
             }
         ImGui::EndTable();
@@ -451,8 +488,7 @@ void YAMP::TracksPanel()
 							{
 								if (ImGui::MenuItem(playlist.name.c_str()))
 								{
-									playlist.songs.push_back(m_FilteredSongs.at(row_n));
-									playlist.duration += m_FilteredSongs.at(row_n).duration;
+									AddSongToPlaylist(&playlist, row_n);
 
 									m_Player.m_Library.SavePlaylists();
 								}
@@ -483,32 +519,8 @@ void YAMP::TracksPanel()
                     ImGui::EndPopup();
                 }
 
-                if (popup)
-                {
-                    ImGui::OpenPopup("Create playlist");
-                }
 
-                if (ImGui::BeginPopupModal("Create playlist",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-                {
-                    ImGui::InputText("Name", m_NewPlayListName, IM_ARRAYSIZE(m_NewPlayListName));
-
-                    if (ImGui::Button("Create"))
-                    {
-                        Playlist playlist;
-                        playlist.name = m_NewPlayListName;
-                        playlist.songs.push_back(m_FilteredSongs.at(row_n));
-						playlist.duration += m_FilteredSongs.at(row_n).duration;
-						m_Player.m_Library.m_Playlists.push_back(playlist);
-						m_Player.m_Library.SavePlaylists();
-                        ImGui::CloseCurrentPopup();
-                    }
-					ImGui::SameLine();
-					if (ImGui::Button("Cancel"))
-					{
-						ImGui::CloseCurrentPopup();
-					}
-                    ImGui::EndPopup();
-                }
+				OpenNewPlaylistModal(row_n, popup, false);
 
                 ImGui::TableNextColumn();
                 ImGui::Text("%s", song->title.c_str());
@@ -613,7 +625,8 @@ void YAMP::PlaylistsPanel()
 				sorts_specs->SpecsDirty = false;
 			}
 
-		bool popup = false;
+		bool playlistRenamePopup = false;
+		bool playlistInfoPopup = false;
 
         ImGuiListClipper clipper;
         clipper.Begin(m_Player.m_Library.m_Playlists.size());
@@ -657,17 +670,27 @@ void YAMP::PlaylistsPanel()
 
 					if(ImGui::Selectable("Rename"))
 					{
-						popup = true;
+						playlistRenamePopup = true;
 						strcpy(m_NewPlayListName, m_Player.m_Library.m_Playlists.at(row_n).name.c_str());
+					}
+
+					if(ImGui::Selectable("Info"))
+					{
+						playlistInfoPopup = true;
 					}
 
 					ImGui::EndPopup();
 				}
 
-				if (popup)
+				if (playlistRenamePopup)
 				{
 					ImGui::OpenPopup("Rename playlist");
-					popup = false;
+					playlistRenamePopup = false;
+				}
+				if (playlistInfoPopup)
+				{
+					ImGui::OpenPopup("Info");
+					playlistInfoPopup = false;
 				}
 
 				if (ImGui::BeginPopupModal("Rename playlist",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
@@ -683,6 +706,20 @@ void YAMP::PlaylistsPanel()
 
 					ImGui::SameLine();
 					if (ImGui::Button("Cancel"))
+					{
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndPopup();
+				}
+
+				if (ImGui::BeginPopupModal("Info",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					ImGui::Text("Playlist name: %s", playlist.name.c_str());
+					ImGui::Text("Songs: %zu", playlist.songs.size());
+					ImGui::Text("Total duration: %s", SecondsToTimeHMS(playlist.duration).c_str());
+
+					ImGui::SameLine();
+					if (ImGui::Button("Close"))
 					{
 						ImGui::CloseCurrentPopup();
 					}
@@ -813,6 +850,77 @@ std::vector<std::string> YAMP::Search(std::string searchText, const std::vector<
 		}
 	}
 	return filteredStrings;
+}
+
+void YAMP::OpenNewPlaylistModal(int index, bool open, bool isAlbum)
+{
+	if (open)
+	{
+		ImGui::OpenPopup("Create playlist");
+	}
+
+	if (ImGui::BeginPopupModal("Create playlist",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::InputTextWithHint("Name", "Name", m_NewPlayListName, IM_ARRAYSIZE(m_NewPlayListName));
+		if (ImGui::Button("Create"))
+		{
+			Playlist playlist;
+			playlist.name = m_NewPlayListName;
+			memset(&m_NewPlayListName[0], 0, sizeof(m_NewPlayListName));
+
+//			playlist.songs.push_back(m_FilteredSongs.at(index));
+//			playlist.duration += m_FilteredSongs.at(index).duration;
+			if (isAlbum)
+			{
+
+			} else
+			{
+				AddSongToPlaylist(&playlist, index);
+			}
+			m_Player.m_Library.m_Playlists.push_back(playlist);
+			m_Player.m_Library.SavePlaylists();
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel"))
+		{
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+}
+
+void YAMP::AddSongToPlaylist(Playlist *playlist, int index)
+{
+	playlist->songs.push_back(m_FilteredSongs.at(index));
+	playlist->duration += m_FilteredSongs.at(index).duration;
+}
+
+std::vector<Song> YAMP::GetSongsFromAlbumName(const std::string& name)
+{
+
+	std::vector<Song> songs;
+
+	for (auto & song : m_Player.m_Library.m_Songs)
+	{
+		if (song.album == name)
+		{
+			songs.push_back(song);
+		}
+	}
+
+	return songs;
+}
+
+void YAMP::AddAlbumToPlaylist(Playlist *playlist, const std::string& albumName)
+{
+	std::vector<Song> songs = GetSongsFromAlbumName(albumName);
+
+	for (const auto& song : songs)
+	{
+		playlist->songs.push_back(song);
+		playlist->duration += song.duration;
+	}
 }
 
 template<typename T>

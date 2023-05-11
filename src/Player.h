@@ -1,16 +1,26 @@
 #pragma once
 #include <string>
 #include <iostream>
-#include "miniaudio.h"
 #include "Library.h"
+#include <gst/gst.h>
+#include <gst/audio/streamvolume.h>
+#include <thread>
+
+typedef struct _GstData
+{
+	GstElement *playbin;
+	GMainLoop *main_loop;
+	bool eos;
+} GstData;
 
 class Player
 {
 private:
-	ma_result m_Result;
-	ma_engine* m_Engine = nullptr;
-	ma_sound m_Sound;
-	ma_engine_config engineConfig;
+	std::thread m_GstThread;
+	GstElement *m_Playbin = nullptr;
+	GMainLoop *m_GstLoop = nullptr;
+	static gboolean HandleMessages (GstBus *bus, GstMessage *msg, GstData *data);
+
 
 public:
     void Init(const std::string& filePath, bool startup = false);
@@ -18,9 +28,9 @@ public:
     void Play();
     void SetVolume(float volume);
     float GetVolume();
-	float GetLengthInSeconds();
+	double GetLengthInSeconds();
     uint64_t GetLength();
-    float GetCursorInSeconds();
+    double GetCursorInSeconds();
     uint64_t GetCursor();
     void SetCursor(uint64_t cursor);
     void SetPlaylist(Playlist playlist);
@@ -28,7 +38,9 @@ public:
     void Next();
     void Prev();
     void UpdateTitle();
-
+	void Stop();
+	bool GetEOS();
+	static void GstThread(GstElement *pipeline, GMainLoop *loop, GstData* data);
 	bool m_Startup = false;
     bool m_IsPaused = true;
     bool m_IsMuted = false;
@@ -37,5 +49,7 @@ public:
     Playlist m_CurrentPlaylist;
     int m_CurrentSongIndex = 0;
     std::string m_CurrentSongTitle;
+	GstData m_Data;
 };
+
 
