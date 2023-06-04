@@ -14,6 +14,3 @@
 [submodule "libs/json"]
 	path = libs/json
 	url = https://github.com/nlohmann/json
-[submodule "libs/taglib"]
-	path = libs/taglib
-	url = https://github.com/taglib/taglib

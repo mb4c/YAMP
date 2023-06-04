@@ -7,9 +7,8 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#define TAGLIB_STATIC
-#include "tag.h"
-#include "fileref.h"
+#include <taglib/tag.h>
+#include <taglib/fileref.h>
 #include "json.hpp"
 #include "Song.h"
 #include "Playlist.h"

@@ -439,7 +439,6 @@ void YAMP::TracksPanel()
 					std::sort(m_Playlist.songs.begin(), m_Playlist.songs.end(),[sorts_specs](const Song& lhs, const Song& rhs){
 						return CompareSong(lhs, rhs, sorts_specs);
 					});
-
 				sorts_specs->SpecsDirty = false;
 			}
 
