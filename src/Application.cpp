@@ -1,4 +1,6 @@
 #include "Application.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 Application::Application(const std::string& title, int width, int height, bool vsync)
 {
@@ -12,6 +14,7 @@ Application::Application(const std::string& title, int width, int height, bool v
 
 void Application::Run()
 {
+
 	if (!glfwInit())
 	{
 		LOG_CRITICAL("Failed to init GLFW");
@@ -31,6 +34,11 @@ void Application::Run()
 		LOG_CRITICAL("Failed to create GLFW window");
 		return;
 	}
+
+	GLFWimage images[1];
+	images[0].pixels = stbi_load("res/yamp.png", &images[0].width, &images[0].height, 0, 4); //rgba channels
+	glfwSetWindowIcon(m_Window, 1, images);
+	stbi_image_free(images[0].pixels);
 
 	glfwSetWindowUserPointer(m_Window, reinterpret_cast<void *>(this));
 
