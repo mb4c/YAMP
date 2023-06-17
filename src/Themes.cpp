@@ -1,5 +1,5 @@
 #include "Themes.h"
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include <fstream>
 
 using namespace nlohmann;

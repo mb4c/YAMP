@@ -5,7 +5,7 @@
 #include "IconsFontAwesome6.h"
 #include "Preferences.h"
 #include "Themes.h"
-#include <misc/cpp/imgui_stdlib.h>
+#include <imgui_stdlib.h>
 #include <thread>
 #include <imgui_internal.h>
 #include <Application.h>

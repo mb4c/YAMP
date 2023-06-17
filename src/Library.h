@@ -9,7 +9,7 @@
 
 #include <taglib/tag.h>
 #include <taglib/fileref.h>
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include "Song.h"
 #include "Playlist.h"
 #include "Log.h"

@@ -1,6 +1,6 @@
 #include <fstream>
 #include "Preferences.h"
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 #include "Log.h"
 using namespace nlohmann;
 
