@@ -762,7 +762,7 @@ void YAMP::FilterTracks()
 	{
 		for (auto & song : m_Player.m_Library.m_Songs)
 		{
-			if (song.album == m_Player.m_Library.m_SelectedAlbum || m_Player.m_Library.m_SelectedAlbum == "All")
+			if (song.album == m_Player.m_Library.m_SelectedAlbum && song.artist == m_Player.m_Library.m_SelectedArtist || m_Player.m_Library.m_SelectedAlbum == "All")
 			{
 				m_FilteredSongs.push_back(song);
 				m_Playlist.songs.push_back(song);
