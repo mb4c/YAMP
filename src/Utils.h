@@ -97,9 +97,10 @@ inline void OpenInFileExplorer(std::filesystem::path path)
 // Extracts artist, title, and track from a song title.
 // Expected format of the title string is "Number. Artist - Title".
 // Returns false if fails.
+// TODO: should use online database and fallback to regex if no results
 inline bool GetMetadataFromTitle(std::string filename, unsigned int* track, std::string* artist, std::string* title)
 {
-	std::regex trackRegex("(\\d+)\\.? ?(.*) - (.*)");
+	std::regex trackRegex("(\\d+)\\.? - ?(.*) - (.*)");
 	std::smatch match;
 	if (std::regex_search(filename, match, trackRegex))
 		*track = std::stoi(match[1]);
