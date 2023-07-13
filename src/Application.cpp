@@ -36,7 +36,7 @@ void Application::Run()
 	}
 
 	GLFWimage images[1];
-	images[0].pixels = stbi_load("res/yamp.png", &images[0].width, &images[0].height, 0, 4); //rgba channels
+	images[0].pixels = stbi_load("res/yamp.png", &images[0].width, &images[0].height, nullptr, 4); //rgba channels
 	glfwSetWindowIcon(m_Window, 1, images);
 	stbi_image_free(images[0].pixels);
 

@@ -18,6 +18,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
+find_package( CURL REQUIRED )
 
 find_library(TAGLIB_LIBRARY tag)
 
@@ -32,10 +33,6 @@ include_directories(SYSTEM src/
                     ${TAGLIB_INCLUDE_DIRS})
 
 file(GLOB VENDORS_SOURCES   libs/glad/src/glad.c
-                            libs/imgui/*.cpp
-                            libs/imgui/backends/imgui_impl_glfw.cpp
-                            libs/imgui/backends/imgui_impl_opengl3.cpp
-                            libs/imgui/misc/cpp/imgui_stdlib.cpp
                             )
 file(GLOB PROJECT_HEADERS src/*.h src/*.hpp)
 file(GLOB PROJECT_SOURCES src/*.cpp)
@@ -66,6 +63,7 @@ target_link_libraries(${PROJECT_NAME} glfw
                         imgui::imgui
                         glm::glm
                         glfw
+                        CURL::libcurl
                         ${TAGLIB_LIBRARY})
 
 set(SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/res")

@@ -43,4 +43,8 @@ public:
 	void SavePlaylists();
 	void LoadPlaylists();
 	Song UUID2Song(const std::string& id);
+
+	static bool GetMetadataFromTitle(const std::string& filename, Song& song);
+	static bool GetMetadataFromInternet(const std::string& filename, Song& song);
+	static bool GetMetadataFromRegex(const std::string& filename, Song& song);
 };

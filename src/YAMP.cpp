@@ -420,7 +420,7 @@ void YAMP::TracksPanel()
     if(ImGui::BeginTable("Tracks", 6, m_PanelFlag))
     {
         ImGui::TableSetupColumn("Track", ImGuiTableColumnFlags_DefaultSort, 0.0f, ColumnID_Track);
-        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_None, 0.0f, ColumnID_Name);
+        ImGui::TableSetupColumn("Title", ImGuiTableColumnFlags_None, 0.0f, ColumnID_Name);
         ImGui::TableSetupColumn("Artist", ImGuiTableColumnFlags_None, 0.0f, ColumnID_Artist);
         ImGui::TableSetupColumn("Album", ImGuiTableColumnFlags_None, 0.0f, ColumnID_Album);
         ImGui::TableSetupColumn("Genre");

@@ -1,4 +1,6 @@
 #include "Library.h"
+#include <curl/curl.h>
+#include <algorithm>
 using namespace nlohmann;
 
 void Library::Scan()
@@ -26,28 +28,29 @@ void Library::Scan()
                     TagLib::FileRef f(entry.path().string().c_str());
                     if(!f.isNull())
                     {
-						bool hasTitleMetadata = false;
+						bool hasMetadata = false;
                         Song song;
                         song.path = entry.path().u8string();
                         song.title = f.tag()->title().to8Bit(true);
                         if (song.title.empty())
 						{
 							song.title = song.path.stem().string();
-							if(GetMetadataFromTitle(song.title, &song.track, &song.artist,&song.title))
-								hasTitleMetadata = true;
+							if(GetMetadataFromTitle(song.title, song))
+								hasMetadata = true;
 						}
-						if (!hasTitleMetadata)
+						if (!hasMetadata)
 						{
 							song.artist = f.tag()->artist().to8Bit(true);
 							if (song.artist.empty())
 								song.artist = "No artist";
 							song.track = f.tag()->track();
+							song.album = f.tag()->album().to8Bit(true);
+							if (song.album.empty())
+								song.album = "No album";
+							song.year = f.tag()->year();
+							song.genre = f.tag()->genre().to8Bit(true);
 						}
-						song.album = f.tag()->album().to8Bit(true);
-						if (song.album.empty())
-							song.album = "No album";
-                        song.year = f.tag()->year();
-                        song.genre = f.tag()->genre().to8Bit(true);
+
                         song.duration = f.audioProperties()->lengthInSeconds();
                         song.uuid = song.path;
 
@@ -217,5 +220,82 @@ Song Library::UUID2Song(const std::string& id)
 		if(song.uuid == id)
 			return song;
 	}
+}
+
+bool Library::GetMetadataFromTitle(const std::string& filename, Song& song)
+{
+	if (GetMetadataFromInternet(filename, song))
+		return true;
+	else
+		return GetMetadataFromRegex(filename, song);
+}
+
+size_t WriteCallback(char* contents, size_t size, size_t nmemb, std::string* output)
+{
+	size_t totalSize = size * nmemb;
+	output->append(contents, totalSize);
+	return totalSize;
+}
+
+
+bool Library::GetMetadataFromInternet(const std::string& filename, Song& song)
+{
+	CURL* curl = curl_easy_init();
+
+	std::string escapedURL = curl_easy_escape(curl, filename.c_str(), 0);
+	std::string queryUrl = "https://musicbrainz.org/ws/2/recording/?query=" + escapedURL + "&limit=1&fmt=json";
+	std::string response;
+
+	if (curl)
+	{
+		curl_easy_setopt(curl, CURLOPT_URL, queryUrl.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, "YAMP/1.0.0 ( https://github.com/mb4c/YAMP )");
+
+		CURLcode res = curl_easy_perform(curl);
+		if (res != CURLE_OK)
+		{
+			// Handle error
+		}
+
+		curl_easy_cleanup(curl);
+	}
+
+	nlohmann::json jsonData = nlohmann::json::parse(response);
+	if (jsonData.contains("recordings"))
+	{
+		song.title = jsonData["recordings"][0]["title"];
+		song.artist = jsonData["recordings"][0]["artist-credit"][0]["name"];
+		song.track = std::stoi(jsonData["recordings"][0]["releases"][0]["media"][0]["track"][0]["number"].get<std::string>());
+		song.album = jsonData["recordings"][0]["releases"][0]["title"];
+		std::string date = jsonData["recordings"][0]["releases"][0]["date"];
+		song.year = std::stoi(date.substr(0, 4));
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+bool Library::GetMetadataFromRegex(const std::string& filename, Song& song)
+{
+	std::regex trackRegex("(\\d+)\\.? - ?(.*) - (.*)");
+	std::smatch match;
+	if (std::regex_search(filename, match, trackRegex))
+		song.track = std::stoi(match[1]);
+	else
+	{
+		std::cout << "Failed to get metadata from title:  " << filename << std::endl;
+		return false;
+
+	}
+
+	song.artist = match[2];
+	song.title = match[3];
+	return true;
 }
 
