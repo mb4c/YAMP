@@ -23,28 +23,7 @@ void YAMP::OnInit()
 	ImGuiIO& io = ImGui::GetIO();
 	io.IniFilename = "res/imgui.ini";
 
-	//TODO: wypierdolić te fonty do funkcji
-	ImVector<ImWchar> ranges;
-	ImFontGlyphRangesBuilder builder;
-	builder.AddText("ąężźćłóśń ĄĘŻŹĆŁÓŚŃ áčďéěíňóřšťúůýž ÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ”");
-	builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
-	builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
-	builder.BuildRanges(&ranges);
-
-	m_Font = io.Fonts->AddFontFromFileTTF("res/Roboto-Medium.ttf", m_Preferences.m_FontSize, nullptr, ranges.Data);
-
-	float iconFontSize = m_Preferences.m_FontSize * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
-
-	// Merge in icons from Font Awesome
-	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
-	ImFontConfig icons_config;
-	icons_config.MergeMode = true;
-	icons_config.PixelSnapH = true;
-	icons_config.GlyphMinAdvanceX = iconFontSize;
-	std::string fa_path;
-	fa_path = "res/"  FONT_ICON_FILE_NAME_FAS;
-	io.Fonts->AddFontFromFileTTF(fa_path.c_str(), iconFontSize, &icons_config, icons_ranges );
-	ImGui::GetIO().Fonts->Build();
+	BuildFont();
 
 	SetWindowSize(glm::ivec2(m_Preferences.m_WindowWidth, m_Preferences.m_WindowHeight));
 	m_Player.m_Volume = m_Preferences.m_Volume;
@@ -921,6 +900,33 @@ void YAMP::AddAlbumToPlaylist(Playlist *playlist, const std::string& albumName)
 		playlist->songs.push_back(song);
 		playlist->duration += song.duration;
 	}
+}
+
+void YAMP::BuildFont()
+{
+	ImGuiIO& io = ImGui::GetIO();
+
+	ImVector<ImWchar> ranges;
+	ImFontGlyphRangesBuilder builder;
+	builder.AddText("ąężźćłóśń ĄĘŻŹĆŁÓŚŃ áčďéěíňóřšťúůýž ÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ”");
+	builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
+	builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
+	builder.BuildRanges(&ranges);
+
+	m_Font = io.Fonts->AddFontFromFileTTF("res/Roboto-Medium.ttf", m_Preferences.m_FontSize, nullptr, ranges.Data);
+
+	float iconFontSize = m_Preferences.m_FontSize * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
+
+	// Merge in icons from Font Awesome
+	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+	ImFontConfig icons_config;
+	icons_config.MergeMode = true;
+	icons_config.PixelSnapH = true;
+	icons_config.GlyphMinAdvanceX = iconFontSize;
+	std::string fa_path;
+	fa_path = "res/"  FONT_ICON_FILE_NAME_FAS;
+	io.Fonts->AddFontFromFileTTF(fa_path.c_str(), iconFontSize, &icons_config, icons_ranges );
+	ImGui::GetIO().Fonts->Build();
 }
 
 template<typename T>

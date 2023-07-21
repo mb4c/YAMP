@@ -72,6 +72,8 @@ private:
 
 	static void TextCentered(const std::string& text);
 
+	void BuildFont();
+
 	enum ColumnID
 	{
 		ColumnID_Track,
