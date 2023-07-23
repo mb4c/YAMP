@@ -34,8 +34,8 @@ include_directories(SYSTEM src/
 
 file(GLOB VENDORS_SOURCES   libs/glad/src/glad.c
                             )
-file(GLOB PROJECT_HEADERS src/*.h src/*.hpp)
-file(GLOB PROJECT_SOURCES src/*.cpp)
+file(GLOB PROJECT_HEADERS src/*.h src/*.hpp src/Panels/*.hpp)
+file(GLOB PROJECT_SOURCES src/*.cpp src/Panels/*.cpp)
 
 file(GLOB PROJECT_CONFIGS CMakeLists.txt
                           Readme.md
