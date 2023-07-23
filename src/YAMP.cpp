@@ -39,7 +39,7 @@ void YAMP::OnInit()
 void YAMP::OnUpdate()
 {
 	Dockspace();
-	StatusPanel();
+	m_StatusPanel.RenderPanel(m_Player);
 
 	if (m_ShowArtistPanel)
 		ArtistsPanel();
@@ -134,121 +134,6 @@ void YAMP::Dockspace()
         ImGui::End();
 }
 
-void YAMP::StatusPanel()
-{
-
-    ImGui::Begin("Status");
-    TextCentered(m_Player.m_CurrentSongTitle);
-
-    if(ImGui::Button(ICON_FA_BACKWARD_STEP))
-    {
-        m_Player.Prev();
-    }
-    ImGui::SameLine();
-    
-    if(ImGui::Button(m_Player.m_IsPaused ? ICON_FA_PLAY : ICON_FA_PAUSE))
-    {
-        if(m_Player.m_IsPaused)
-            m_Player.Play();
-        else 
-            m_Player.Pause();
-
-    }
-
-    ImGui::SameLine();
-    if(ImGui::Button(ICON_FA_FORWARD_STEP))
-    {
-        m_Player.Next();
-    }
-    ImGui::SameLine();
-    std::string timeStr = SecondsToTime(m_Player.GetCursorInSeconds());
-    timeStr += " / " + SecondsToTime(m_Player.GetLengthInSeconds());
-    ImGui::Text("%s", timeStr.c_str());
-
-    ImGui::SameLine();
-    ImGui::PushItemWidth(ImGui::GetWindowSize().x * 0.65f);
-
-    double cursor = (double)m_Player.GetCursor() / (double)m_Player.GetLength();
-    static double min = 0;
-    static double max = 1;
-
-	if (m_Player.GetEOS())
-	{
-		if (m_Repeat)
-			m_Player.SetCursor(0);
-		else
-			m_Player.Next();
-	}
-
-    if(ImGui::SliderScalar("##Progress", ImGuiDataType_Double, &cursor, &min, &max, ""))
-    {
-		m_Holding = true;
-        m_Player.Pause();
-        m_Player.SetCursor(cursor * m_Player.GetLength());
-    }
-
-    if (m_Holding && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-    {
-        m_Player.Play();
-		m_Holding = false;
-    }
-
-    ImGui::SameLine();
-
-    if (ImGui::Button(m_Player.m_IsMuted ? ICON_FA_VOLUME_XMARK : ICON_FA_VOLUME_HIGH))
-	{
-		if (m_Player.m_IsMuted)
-		{
-			m_Player.m_IsMuted = false;
-		}
-		else
-		{
-			m_Player.m_IsMuted = true;
-		}
-        m_Player.SetVolume(m_Player.m_Volume);
-	}
-
-
-    ImGui::SameLine();
-    ImGui::PushItemWidth(ImGui::GetWindowSize().x * 0.15f);
-
-	std::stringstream ss;
-	ss << std::fixed << std::setprecision(0) << round(m_Player.m_Volume * 100) << "%%";
-
-    if(ImGui::SliderFloat("##volume", &m_Player.m_Volume, 0.0f, 1.0f, ss.str().c_str()))
-    {
-        m_Player.SetVolume(m_Player.m_Volume);
-		m_Preferences.m_Volume = m_Player.m_Volume;
-
-	}
-	ImGui::SetItemUsingMouseWheel();
-	if (ImGui::IsItemHovered())
-	{
-		float wheel = ImGui::GetIO().MouseWheel;
-		if (wheel)
-		{
-			if (ImGui::IsItemActive())
-			{
-				ImGui::ClearActiveID();
-			}
-			else
-			{
-				m_Player.m_Volume += wheel * 0.05f;
-				m_Player.m_Volume = std::clamp(m_Player.m_Volume, 0.0f, 1.0f);
-				m_Player.SetVolume(m_Player.m_Volume);
-				m_Preferences.m_Volume = m_Player.m_Volume;
-			}
-		}
-	}
-
-    ImGui::SameLine();
-    if (ImGui::Button(m_Repeat ? ICON_FA_ARROW_RIGHT : ICON_FA_REPEAT))
-    {
-        m_Repeat = !m_Repeat;
-    }
-
-    ImGui::End();
-}
 
 void YAMP::ArtistsPanel()
 {
@@ -794,27 +679,6 @@ bool YAMP::CompareSong(const Song &lhs, const Song &rhs, ImGuiTableSortSpecs *sp
 	return (lhs.track - rhs.track);
 }
 
-void YAMP::TextCentered(const std::string &text)
-{
-	float win_width = ImGui::GetWindowSize().x;
-	float text_width = ImGui::CalcTextSize(text.c_str()).x;
-
-	// calculate the indentation that centers the text on one line, relative
-	// to window left, regardless of the `ImGuiStyleVar_WindowPadding` value
-	float text_indentation = (win_width - text_width) * 0.5f;
-
-	// if text is too long to be drawn on one line, `text_indentation` can
-	// become too small or even negative, so we check a minimum indentation
-	float min_indentation = 20.0f;
-	if (text_indentation <= min_indentation) {
-		text_indentation = min_indentation;
-	}
-
-	ImGui::SameLine(text_indentation);
-	ImGui::PushTextWrapPos(win_width - text_indentation);
-	ImGui::TextWrapped("%s", text.c_str());
-	ImGui::PopTextWrapPos();
-}
 
 std::vector<std::string> YAMP::Search(std::string searchText, const std::vector<std::string>& strings)
 {

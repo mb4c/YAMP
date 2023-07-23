@@ -11,6 +11,7 @@
 #include <Application.h>
 #include "portable-file-dialogs.h"
 #include <filesystem>
+#include <Panels/StatusPanel.hpp>
 
 
 class YAMP : public Application
@@ -23,7 +24,6 @@ private:
 
     Preferences m_Preferences;
     Player m_Player;
-    bool m_Holding = false;
 
     bool m_ShowArtistPanel = true;
     bool m_ShowAlbumPanel = true;
@@ -34,7 +34,6 @@ private:
     char m_NewPlayListName[256] = "";
     bool m_PlaylistClicked = false;
     Playlist* m_SelectedPlaylist = nullptr;
-    bool m_Repeat = false;
 	Playlist m_Playlist;
 	std::vector<std::string> m_FilteredAlbums;
 	std::vector<Song> m_FilteredSongs;
@@ -50,7 +49,9 @@ private:
 	Themes m_Themes;
 
 	void Dockspace();
-	void StatusPanel();
+
+	StatusPanel m_StatusPanel{&m_Preferences};
+
 	void ArtistsPanel();
 	void AlbumPanel();
 	void TracksPanel();
@@ -70,7 +71,6 @@ private:
 	static bool CompareString(const std::string& lhs, const std::string& rhs, bool descending = false);
 	static bool CompareSong(const Song& lhs, const Song& rhs, ImGuiTableSortSpecs* specs);
 
-	static void TextCentered(const std::string& text);
 
 	void BuildFont();
 
