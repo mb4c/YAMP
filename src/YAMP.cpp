@@ -772,7 +772,7 @@ void YAMP::BuildFont()
 
 	ImVector<ImWchar> ranges;
 	ImFontGlyphRangesBuilder builder;
-	builder.AddText("ąężźćłóśń ĄĘŻŹĆŁÓŚŃ áčďéěíňóřšťúůýž ÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ”");
+	builder.AddText("ąężźćłóśń ĄĘŻŹĆŁÓŚŃ áčďéěíňóřšťúůýž ÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ” ̨");
 	builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
 	builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
 	builder.BuildRanges(&ranges);
