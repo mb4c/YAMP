@@ -11,9 +11,8 @@ YAMP is a cross-platform music player written in C++.
 - Cross-platform, works on Linux, FreeBSD
 
 # Planned Features
-- Integration with streaming services (Spotify)
-- Plugins
 - Customizable hotkeys
+- Lyrics
 
 # Building
 
