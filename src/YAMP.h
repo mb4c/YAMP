@@ -12,6 +12,12 @@
 #include "portable-file-dialogs.h"
 #include <filesystem>
 #include <Panels/StatusPanel.hpp>
+#include <Panels/ArtistsPanel.hpp>
+
+#include <Filter.hpp>
+#include <Panels/AlbumPanel.hpp>
+#include <Panels/TracksPanel.hpp>
+#include <Panels/PlaylistsPanel.hpp>
 
 
 class YAMP : public Application
@@ -30,60 +36,30 @@ private:
     bool m_ShowTracksPanel = true;
     bool m_ShowPlaylistsPanel = true;
     bool m_ShowPreferencesPanel = false;
+	bool m_ShouldFilterTracks = false;
     ImFont* m_Font = nullptr;
-    char m_NewPlayListName[256] = "";
+	std::string m_NewPlayListName;
     bool m_PlaylistClicked = false;
-    Playlist* m_SelectedPlaylist = nullptr;
+    Playlist m_SelectedPlaylist;
 	Playlist m_Playlist;
 	std::vector<std::string> m_FilteredAlbums;
 	std::vector<Song> m_FilteredSongs;
-	std::string m_ArtistSearchbar;
-	std::string m_AlbumSearchbar;
-	std::vector<std::string> m_SearchArtists;
-	std::vector<std::string> m_SearchAlbums;
-	static const ImGuiTableFlags m_PanelFlag =
-			ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortTristate
-			| ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody
-			| ImGuiTableFlags_ScrollY;
+
+	SearchProps m_SearchProps;
 
 	Themes m_Themes;
 
 	void Dockspace();
 
 	StatusPanel m_StatusPanel{&m_Preferences};
+	ArtistsPanel m_ArtistPanel{};
+	AlbumPanel m_AlbumPanel;
+	TracksPanel m_TracksPanel;
+	PlaylistsPanel m_PlaylistsPanel;
 
-	void ArtistsPanel();
-	void AlbumPanel();
-	void TracksPanel();
 	void PreferencesPanel();
-	void PlaylistsPanel();
-	void FilterAlbum();
-	void FilterTracks();
-
-	std::vector<Song> GetSongsFromAlbumName(const std::string& name);
-	void OpenNewPlaylistModal(int index, bool open, bool isAlbum);
-	void AddSongToPlaylist(Playlist* playlist, int index);
-	void AddAlbumToPlaylist(Playlist* playlist, const std::string& albumName);
-	static std::vector<std::string> Search(std::string searchText, const std::vector<std::string>& strings);
-	template<typename T> void Reorder(std::vector<T>& vec, int index);
-
-	static int ComparePlaylist(const Playlist& lhs, const Playlist& rhs);
-	static bool CompareString(const std::string& lhs, const std::string& rhs, bool descending = false);
-	static bool CompareSong(const Song& lhs, const Song& rhs, ImGuiTableSortSpecs* specs);
-
 
 	void BuildFont();
-
-	enum ColumnID
-	{
-		ColumnID_Track,
-		ColumnID_Name,
-		ColumnID_Artist,
-		ColumnID_Album,
-		ColumnID_Genre,
-		ColumnID_Year
-	};
-
 
 
 public:

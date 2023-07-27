@@ -137,7 +137,6 @@ void Library::Load()
 
 void Library::GenerateAlbums()
 {
-    m_Artists.emplace_back("All");
     for (auto & song : m_Songs)
     {
         if (std::find(m_Artists.begin(), m_Artists.end(), song.artist) == m_Artists.end())
@@ -146,7 +145,6 @@ void Library::GenerateAlbums()
         }
     }
 
-    m_Albums.emplace_back("All");
     for (auto & song : m_Songs)
     {
         if (std::find(m_Albums.begin(), m_Albums.end(), song.album) == m_Albums.end())
@@ -224,10 +222,13 @@ Song Library::UUID2Song(const std::string& id)
 
 bool Library::GetMetadataFromTitle(const std::string& filename, Song& song)
 {
-	if (GetMetadataFromInternet(filename, song))
-		return true;
-	else
-		return GetMetadataFromRegex(filename, song);
+	//TODO: if musicbrainz doesn't have song in database use regex
+//	if (GetMetadataFromInternet(filename, song))
+//		return true;
+//	else
+//		return GetMetadataFromRegex(filename, song);
+	return GetMetadataFromRegex(filename, song);
+
 }
 
 size_t WriteCallback(char* contents, size_t size, size_t nmemb, std::string* output)
@@ -269,8 +270,15 @@ bool Library::GetMetadataFromInternet(const std::string& filename, Song& song)
 		song.artist = jsonData["recordings"][0]["artist-credit"][0]["name"];
 		song.track = std::stoi(jsonData["recordings"][0]["releases"][0]["media"][0]["track"][0]["number"].get<std::string>());
 		song.album = jsonData["recordings"][0]["releases"][0]["title"];
-		std::string date = jsonData["recordings"][0]["releases"][0]["date"];
-		song.year = std::stoi(date.substr(0, 4));
+		if (jsonData["recordings"][0]["releases"][0].contains("date"))
+		{
+			std::string date = jsonData["recordings"][0]["releases"][0]["date"];
+			song.year = std::stoi(date.substr(0, 4));
+		}
+		else
+		{
+			return false;
+		}
 
 		return true;
 	}

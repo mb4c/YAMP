@@ -116,3 +116,44 @@ inline void TextCentered(const std::string &text)
 	ImGui::TextWrapped("%s", text.c_str());
 	ImGui::PopTextWrapPos();
 }
+
+inline std::vector<std::string> Search(std::string searchText, const std::vector<std::string>& strings)
+{
+	std::vector<std::string> filteredStrings;
+	std::transform(searchText.begin(), searchText.end(), searchText.begin(), ::tolower);
+
+	for (const auto& str : strings)
+	{
+		std::string str_copy = str;
+		std::transform(str_copy.begin(), str_copy.end(), str_copy.begin(), ::tolower);
+		if (str_copy.find(searchText) != std::string::npos)
+		{
+			filteredStrings.push_back(str);
+		}
+	}
+	return filteredStrings;
+}
+
+struct SearchProps
+{
+	std::string artistSearchbar;
+	std::string albumSearchbar;
+	std::vector<std::string> searchArtists;
+	std::vector<std::string> searchAlbums;
+};
+
+template<typename T>
+void Reorder(std::vector<T> &vec, int index)
+{
+	T type = vec[index];
+	if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
+	{
+		int n_next = index + (ImGui::GetMouseDragDelta(0).y < 0.f ? -1 : 1);
+		if (n_next >= 0 && n_next < vec.size())
+		{
+			vec[index] = vec[n_next];
+			vec[n_next] = type;
+			ImGui::ResetMouseDragDelta();
+		}
+	}
+}
