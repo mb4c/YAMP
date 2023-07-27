@@ -106,7 +106,7 @@ void YAMP::Dockspace()
 							m_Player.m_Library.Scan();
 							m_Player.m_Library.Load();
 							m_Player.m_Library.LoadPlaylists();
-							m_SearchProps.searchArtists = Search(m_SearchProps.artistSearchbar, m_Player.m_Library.m_Artists); // TODO: sprawdzic czy buguje
+							m_SearchProps.searchArtists = Search(m_SearchProps.artistSearchbar, m_Player.m_Library.m_Artists);
 							Filter::FilterAlbum(m_Player, m_FilteredAlbums, m_SearchProps.searchArtists, m_SearchProps.artistSearchbar);
 							Filter::FilterTracks(m_Player, m_Playlist, m_SelectedPlaylist, m_FilteredSongs, m_PlaylistClicked);
 						});

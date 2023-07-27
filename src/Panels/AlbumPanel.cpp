@@ -89,8 +89,6 @@ void AlbumPanel::RenderPanel(Player& player, std::vector<std::string>& filteredA
 						}
 						ImGui::EndMenu();
 					}
-					//TODO: open in file explorer
-
 						if (ImGui::MenuItem("Open in file explorer"))
 						{
 							OpenInFileExplorer(GetSongsFromAlbumName(filteredAlbums[row_n], player)[0].path);
