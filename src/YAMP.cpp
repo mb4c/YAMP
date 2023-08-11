@@ -63,7 +63,13 @@ void YAMP::OnUpdate()
 		if (m_TracksPanel.m_SortsSpecs)
 			m_TracksPanel.m_SortsSpecs->SpecsDirty = true;
 	}
-
+	if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Space)))
+	{
+		if(m_Player.m_IsPaused)
+			m_Player.Play();
+		else
+			m_Player.Pause();
+	}
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
