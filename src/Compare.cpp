@@ -28,7 +28,7 @@ bool Compare::CompareSong(const Song &lhs, const Song &rhs, ImGuiTableSortSpecs 
 			case ColumnID_Artist:       delta = (strcmp(lhs.artist.c_str(), rhs.artist.c_str()));  	break;
 			case ColumnID_Album:    	delta = (strcmp(lhs.album.c_str(), rhs.album.c_str()));   	break;
 			case ColumnID_Genre:    	delta = (strcmp(lhs.genre.c_str(), rhs.genre.c_str()));   	break;
-			case ColumnID_Year:        	delta = (lhs.track - rhs.track);                			break;
+			case ColumnID_Year:        	delta = (lhs.year - rhs.year);                				break;
 
 			default: IM_ASSERT(0); break;
 		}

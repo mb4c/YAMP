@@ -8,7 +8,6 @@ YAMP is a cross-platform music player written in C++.
 - Playlists
 - Themes
 - Unicode support
-- Cross-platform, works on Linux, FreeBSD
 
 # Planned Features
 - Customizable hotkeys
@@ -18,7 +17,7 @@ YAMP is a cross-platform music player written in C++.
 
 #### Clone repository
 ```
-git clone --recurse-submodules https://github.com/mb4c/YAMP
+git clone https://github.com/mb4c/YAMP
 ``` 
 
 #### Linux

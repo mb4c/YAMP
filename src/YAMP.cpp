@@ -60,6 +60,8 @@ void YAMP::OnUpdate()
 	{
 		m_ShouldFilterTracks = false;
 		Filter::FilterTracks(m_Player, m_Playlist, m_SelectedPlaylist, m_FilteredSongs, m_PlaylistClicked);
+		if (m_TracksPanel.m_SortsSpecs)
+			m_TracksPanel.m_SortsSpecs->SpecsDirty = true;
 	}
 
 

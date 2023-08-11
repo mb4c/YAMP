@@ -13,6 +13,7 @@ public:
 			| ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody
 			| ImGuiTableFlags_ScrollY;
 	std::string m_PlaylistName;
+	ImGuiTableSortSpecs* m_SortsSpecs = nullptr;
 
 
 	void RenderPanel(Player& player, std::vector<Song>& filteredSongs, Playlist& playlist, Playlist& selectedPlaylist, const bool& playlistClicked, bool& shouldFilterTracks);

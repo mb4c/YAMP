@@ -13,20 +13,20 @@ void TracksPanel::RenderPanel(Player& player, std::vector<Song>& filteredSongs, 
 		ImGui::TableSetupColumn("Genre");
 		ImGui::TableSetupColumn("Year");
 		ImGui::TableHeadersRow();
-
-		if (ImGuiTableSortSpecs* sorts_specs = ImGui::TableGetSortSpecs())
-			if (sorts_specs->SpecsDirty)
+		m_SortsSpecs = ImGui::TableGetSortSpecs();
+		if (m_SortsSpecs)
+			if (m_SortsSpecs->SpecsDirty)
 			{
 				if (filteredSongs.size() > 1)
-					std::sort(filteredSongs.begin(), filteredSongs.end(),[sorts_specs](const Song& lhs, const Song& rhs){
-						return Compare::CompareSong(lhs, rhs, sorts_specs);
+					std::sort(filteredSongs.begin(), filteredSongs.end(),[this](const Song& lhs, const Song& rhs){
+						return Compare::CompareSong(lhs, rhs, m_SortsSpecs);
 					});
 
 				if (playlist.songs.size() > 1)
-					std::sort(playlist.songs.begin(), playlist.songs.end(),[sorts_specs](const Song& lhs, const Song& rhs){
-						return Compare::CompareSong(lhs, rhs, sorts_specs);
+					std::sort(playlist.songs.begin(), playlist.songs.end(),[this](const Song& lhs, const Song& rhs){
+						return Compare::CompareSong(lhs, rhs, m_SortsSpecs);
 					});
-				sorts_specs->SpecsDirty = false;
+				m_SortsSpecs->SpecsDirty = false;
 			}
 
 		ImGuiListClipper clipper;
