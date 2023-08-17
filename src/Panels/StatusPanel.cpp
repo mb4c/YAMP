@@ -29,9 +29,8 @@ void StatusPanel::RenderPanel(Player& player)
 	std::string timeStr = SecondsToTime(player.GetCursorInSeconds());
 	timeStr += " / " + SecondsToTime(player.GetLengthInSeconds());
 	ImGui::Text("%s", timeStr.c_str());
-
 	ImGui::SameLine();
-	ImGui::PushItemWidth(ImGui::GetWindowSize().x * 0.65f);
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.75f);
 
 	double cursor = (double)player.GetCursor() / (double)player.GetLength();
 	static double min = 0;
@@ -75,8 +74,7 @@ void StatusPanel::RenderPanel(Player& player)
 
 
 	ImGui::SameLine();
-	ImGui::PushItemWidth(ImGui::GetWindowSize().x * 0.15f);
-
+	ImGui::PushItemWidth(-(ImGui::GetFontSize() * 2.0f + ImGui::GetStyle().ItemSpacing.x));
 	std::stringstream ss;
 	ss << std::fixed << std::setprecision(0) << round(player.m_Volume * 100) << "%%";
 
