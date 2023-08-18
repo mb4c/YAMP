@@ -27,7 +27,6 @@ sudo dnf install libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel 
 mkdir build
 cmake -B build/ -S . -DCMAKE_TOOLCHAIN_FILE=[path to vcpkg]/scripts/buildsystems/vcpkg.cmake 
 cd build
-cmake ..
 make
 ```
 
