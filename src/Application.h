@@ -13,7 +13,7 @@
 class Application
 {
 public:
-	Application(const std::string& title, int width, int height, bool vsync = true);
+	Application(const std::string& title, int width, int height, bool vsync = true, int argc = 0, char** argv = nullptr);
 	void Run();
 
 	virtual void OnInit() = 0;
@@ -23,6 +23,7 @@ public:
 	GLFWwindow* GetWindow();
 	glm::ivec2 GetWindowSize() { return {m_Width, m_Height};}
 	void SetWindowSize(glm::ivec2 size);
+	std::vector<std::string> GetArguments() { return m_Arguments; };
 
 private:
 	std::string m_Title;
@@ -30,5 +31,5 @@ private:
 	int m_Height;
 	bool m_Vsync;
 	GLFWwindow* m_Window;
-
+	std::vector<std::string> m_Arguments;
 };

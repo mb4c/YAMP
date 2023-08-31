@@ -2,12 +2,18 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Application::Application(const std::string& title, int width, int height, bool vsync)
+Application::Application(const std::string& title, int width, int height, bool vsync, int argc, char** argv)
 {
 	m_Title = title;
 	m_Width = width;
 	m_Height = height;
 	m_Vsync = vsync;
+
+	for (int i = 0; i < argc; ++i)
+	{
+		m_Arguments.push_back(argv[i]);
+	}
+
 	spdlog::set_level(spdlog::level::trace);
 
 }

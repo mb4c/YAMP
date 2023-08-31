@@ -37,7 +37,7 @@ public:
     void SetPlaylist(Playlist playlist, int index);
     void Next();
     void Prev();
-    void UpdateTitle();
+    void UpdateTitle(const std::string& file);
 	void Stop();
 	bool GetEOS();
 	static void GstThread(GstElement *pipeline, GMainLoop *loop, GstData* data);

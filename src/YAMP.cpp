@@ -5,7 +5,7 @@
 #include <Panels/Modals.hpp>
 
 
-YAMP::YAMP(const std::string &title, int width, int height, bool vsync) : Application(title, width, height, vsync)
+YAMP::YAMP(const std::string &title, int width, int height, bool vsync, int argc, char** argv) : Application(title, width, height, vsync, argc, argv)
 {
 }
 
@@ -16,7 +16,15 @@ void YAMP::OnInit()
 	m_Player.m_Library.Load();
 	m_Player.m_Library.LoadPlaylists();
 
-	m_Player.Init(std::filesystem::absolute("res/start.wav").string(), true);
+	if(GetArguments().size() == 2)
+	{
+		m_Player.Init(std::filesystem::absolute(GetArguments()[1]).string(), true);
+	}
+	else
+	{
+		m_Player.Init(std::filesystem::absolute("res/start.wav").string(), true);
+	}
+
 	m_Themes.ScanThemes();
 	m_Themes.LoadThemeFromName(m_Preferences.m_Theme);
 

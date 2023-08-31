@@ -31,7 +31,7 @@ void Player::Init(const std::string& filePath, bool startup)
 	m_GstThread = std::thread(GstThread, m_Playbin, m_GstLoop, &m_Data);
 	m_Startup = startup;
 
-    UpdateTitle();
+    UpdateTitle(filePath);
 
     SetVolume(m_Volume);
     m_IsPaused = false;
@@ -140,7 +140,7 @@ void Player::Prev()
     }
 }
 
-void Player::UpdateTitle()
+void Player::UpdateTitle(const std::string& file)
 {
     if (!m_CurrentPlaylist.songs.empty())
     {
@@ -148,6 +148,10 @@ void Player::UpdateTitle()
 		m_CurrentSongTitle += " - ";
 		m_CurrentSongTitle += m_CurrentPlaylist.songs[m_CurrentSongIndex].title;
     }
+	else
+	{
+		m_CurrentSongTitle = std::filesystem::path(file).filename();
+	}
  }
 
 void Player::Stop()
