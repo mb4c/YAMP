@@ -89,13 +89,20 @@ void AlbumPanel::RenderPanel(Player& player, std::vector<std::string>& filteredA
 						}
 						ImGui::EndMenu();
 					}
-						if (ImGui::MenuItem("Open in file explorer"))
-						{
-							OpenInFileExplorer(GetSongsFromAlbumName(filteredAlbums[row_n], player)[0].path);
-						}
+					if (ImGui::MenuItem("Open in file explorer"))
+					{
+						OpenInFileExplorer(GetSongsFromAlbumName(searchProps.searchAlbums[row_n], player)[0].path);
+					}
+					if (ImGui::MenuItem("Info"))
+					{
+						m_AlbumInfo.m_Playlist = Playlist::GetPlaylistFromAlbumName(searchProps.searchAlbums[row_n], m_Songs);
+						m_AlbumInfo.Open(Playlist::GetPlaylistFromAlbumName(searchProps.searchAlbums[row_n], m_Songs));
+					}
 
 					ImGui::EndPopup();
 				}
+
+				m_AlbumInfo.Render();
 				Modals::OpenNewPlaylistModal(row_n, popup, true, player, m_PlaylistName, filteredSongs);
 
                 ImGui::PopID();
@@ -132,8 +139,9 @@ std::vector<Song> AlbumPanel::GetSongsFromAlbumName(const std::string &name, Pla
 	return songs;
 }
 
-void AlbumPanel::Init(bool &shouldFilterTracks, std::vector<std::string>& filteredAlbums, SearchProps& searchProps)
+void AlbumPanel::Init(bool &shouldFilterTracks, std::vector<std::string>& filteredAlbums, SearchProps& searchProps, const std::vector<Song>& songs)
 {
 	searchProps.searchAlbums = Search(searchProps.albumSearchbar, filteredAlbums);
 	shouldFilterTracks = true;
+	m_Songs = songs;
 }
