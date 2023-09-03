@@ -40,7 +40,7 @@ void YAMP::OnInit()
 	m_Player.SetVolume(m_Preferences.m_Volume);
 
 	m_ArtistPanel.Init(m_Player, m_FilteredAlbums, m_SearchProps);
-	m_AlbumPanel.Init(m_ShouldFilterTracks, m_FilteredAlbums, m_SearchProps);
+	m_AlbumPanel.Init(m_ShouldFilterTracks, m_FilteredAlbums, m_SearchProps, m_Player.m_Library.m_Songs);
 	m_ShouldFilterTracks = true;
 }
 

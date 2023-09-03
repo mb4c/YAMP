@@ -17,4 +17,25 @@ public:
 		playlist->songs.push_back(filteredSongs.at(index));
 		playlist->duration += filteredSongs.at(index).duration;
 	}
+	inline void AddSong(Song song)
+	{
+		songs.push_back(song);
+		duration += song.duration;
+	}
+
+	inline static Playlist GetPlaylistFromAlbumName(const std::string& album, std::vector<Song> songs)
+	{
+		Playlist playlist;
+		playlist.name = album;
+
+		for (int i = 0; i < songs.size(); ++i)
+		{
+			if (songs[i].album == album)
+			{
+				playlist.AddSong(songs[i]);
+			}
+		}
+
+		return playlist;
+	}
 };

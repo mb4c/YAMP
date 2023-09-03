@@ -1,3 +1,4 @@
+#include <TrackInfoModal.hpp>
 #include "TracksPanel.hpp"
 
 void TracksPanel::RenderPanel(Player& player, std::vector<Song>& filteredSongs, Playlist& playlist, Playlist& selectedPlaylist, const bool& playlistClicked, bool& shouldFilterTracks)
@@ -91,6 +92,10 @@ void TracksPanel::RenderPanel(Player& player, std::vector<Song>& filteredSongs, 
 							player.m_Library.m_SelectedAlbum = filteredSongs[row_n].album;
 							shouldFilterTracks = true;
 						}
+						if (ImGui::MenuItem("Info"))
+						{
+							m_TrackInfoModal.Open(filteredSongs[row_n]);
+						}
 					}
 					else
 					{
@@ -107,7 +112,7 @@ void TracksPanel::RenderPanel(Player& player, std::vector<Song>& filteredSongs, 
 					ImGui::EndPopup();
 				}
 
-
+				m_TrackInfoModal.Render();
 				Modals::OpenNewPlaylistModal(row_n, popup, false, player, m_PlaylistName, filteredSongs);
 
 				ImGui::TableNextColumn();
