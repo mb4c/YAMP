@@ -18,6 +18,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
 find_package( CURL REQUIRED )
 
 find_library(TAGLIB_LIBRARY tag)
@@ -29,11 +30,9 @@ endif()
 
 
 include_directories(SYSTEM src/
-                    libs/glad/include/
                     ${TAGLIB_INCLUDE_DIRS})
 
-file(GLOB VENDORS_SOURCES   libs/glad/src/glad.c
-                            )
+
 file(GLOB PROJECT_HEADERS src/*.h src/*.hpp src/Panels/*.hpp)
 file(GLOB PROJECT_SOURCES src/*.cpp src/Panels/*.cpp)
 
@@ -46,8 +45,7 @@ file(GLOB PROJECT_CONFIGS CMakeLists.txt
 add_definitions(-DGLFW_INCLUDE_NONE
                 -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
-                               ${PROJECT_CONFIGS}
-                               ${VENDORS_SOURCES})
+                               ${PROJECT_CONFIGS})
 
 target_link_libraries(${PROJECT_NAME} glfw
                       ${GLFW_LIBRARIES} ${GLAD_LIBRARIES}
@@ -63,6 +61,7 @@ target_link_libraries(${PROJECT_NAME} glfw
                         imgui::imgui
                         glm::glm
                         glfw
+                        glad::glad
                         CURL::libcurl
                         ${TAGLIB_LIBRARY})
 

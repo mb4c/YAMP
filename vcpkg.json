@@ -23,5 +23,8 @@
   }, {
     "name" : "taglib",
     "version>=" : "1.13.0#1"
+  }, {
+    "name" : "glad",
+    "version>=" : "0.1.36"
   } ]
 }
