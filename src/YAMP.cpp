@@ -229,12 +229,11 @@ void YAMP::PreferencesPanel()
 void YAMP::BuildFont()
 {
 	ImGuiIO& io = ImGui::GetIO();
+	static ImWchar fontRange[] = { 0x1, static_cast<ImWchar>(0x1FFFF), 0 };
 
 	ImVector<ImWchar> ranges;
 	ImFontGlyphRangesBuilder builder;
-	builder.AddText("ąężźćłóśń ĄĘŻŹĆŁÓŚŃ áčďéěíňóřšťúůýž ÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ” ̨");
-	builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
-	builder.AddRanges(io.Fonts->GetGlyphRangesCyrillic());
+	builder.AddRanges(fontRange);
 	builder.BuildRanges(&ranges);
 
 	m_Font = io.Fonts->AddFontFromFileTTF("res/Roboto-Medium.ttf", m_Preferences.m_FontSize, nullptr, ranges.Data);
