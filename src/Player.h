@@ -50,6 +50,7 @@ public:
     int m_CurrentSongIndex = 0;
     std::string m_CurrentSongTitle;
 	GstData m_Data;
+	std::string m_CurrentAlbum;
 };
 
 

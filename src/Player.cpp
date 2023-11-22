@@ -105,6 +105,7 @@ void Player::SetPlaylist(Playlist playlist, int index)
 {
     m_CurrentPlaylist = std::move(playlist);
     m_CurrentSongIndex = index;
+	m_CurrentAlbum = m_CurrentPlaylist.songs[m_CurrentSongIndex].album;
     Init(m_CurrentPlaylist.songs[m_CurrentSongIndex].path);
 }
 

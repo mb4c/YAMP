@@ -40,7 +40,7 @@ void TracksPanel::RenderPanel(Player& player, std::vector<Song>& filteredSongs, 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 
-				bool selected = song == &filteredSongs[player.m_CurrentSongIndex];
+				bool selected = song == &filteredSongs[player.m_CurrentSongIndex] && song->album == player.m_CurrentAlbum;
 
 				ImGui::Selectable(std::to_string(song->track).c_str(),selected, ImGuiSelectableFlags_SpanAllColumns);
 				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
