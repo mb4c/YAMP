@@ -10,6 +10,7 @@
 #include <imgui_internal.h>
 #include <Application.h>
 #include "portable-file-dialogs.h"
+#include "LibraryInfoModal.hpp"
 #include <filesystem>
 #include <Panels/StatusPanel.hpp>
 #include <Panels/ArtistsPanel.hpp>
@@ -55,6 +56,8 @@ private:
 	AlbumPanel m_AlbumPanel;
 	TracksPanel m_TracksPanel;
 	PlaylistsPanel m_PlaylistsPanel;
+
+	LibraryInfoModal m_LibraryInfoModal{"Library info"};
 
 	void PreferencesPanel();
 

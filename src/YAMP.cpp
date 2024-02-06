@@ -79,6 +79,8 @@ void YAMP::OnUpdate()
 			m_Player.Pause();
 	}
 
+	m_LibraryInfoModal.Render();
+
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
 	ImGui::RenderNotifications();
@@ -127,6 +129,11 @@ void YAMP::Dockspace()
 							Filter::FilterTracks(m_Player, m_Playlist, m_SelectedPlaylist, m_FilteredSongs, m_PlaylistClicked);
 						});
 						libraryThread.detach();
+					}
+
+					if (ImGui::MenuItem("Info"))
+					{
+						m_LibraryInfoModal.Open(std::make_shared<Library>(m_Player.m_Library));
 					}
 
                     ImGui::EndMenu();
