@@ -19,7 +19,7 @@ void Preferences::Save()
     o << json;
     o.close();
 
-	LOG_TRACE("Preferences saved");
+	Log::Trace("Preferences saved");
 }
 
 void Preferences::Load()
@@ -41,5 +41,5 @@ void Preferences::Load()
 	m_Volume = json["Volume"];
 	m_Theme = json["Theme"];
 
-	LOG_TRACE("Preferences loaded");
+	Log::Trace("Preferences loaded");
 }

@@ -175,7 +175,7 @@ void YAMP::PreferencesPanel()
 			{
 				m_Preferences.m_LibraryPath = selection;
 				m_Player.m_Library.m_LibraryPath = selection;
-				LOG_TRACE("User selected folder: {}", selection);
+				Log::Trace("User selected folder: {}", selection);
 			}
 		}
 

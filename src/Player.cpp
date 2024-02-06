@@ -13,7 +13,7 @@ void Player::Init(const std::string& filePath, bool startup)
 	file = "file://";
 	file.append(filePath);
 
-	LOG_TRACE("Initializing file: {}", filePath);
+	Log::Trace("Initializing file: {}", filePath);
 	/* Create the pipeline */
 	m_Playbin = gst_element_factory_make ("playbin", "playbin");
 	g_object_set (m_Playbin, "uri", file.c_str(), NULL);
