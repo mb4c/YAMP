@@ -23,7 +23,6 @@
 class YAMP : public Application
 {
 private:
-
 	void OnInit() override;
 	void OnUpdate() override;
 	void OnShutdown() override;
@@ -64,4 +63,5 @@ private:
 
 public:
     YAMP(const std::string &title, int width, int height, bool vsync, int argc, char** argv);
+	~YAMP();
 };

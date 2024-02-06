@@ -251,3 +251,8 @@ void YAMP::BuildFont()
 	io.Fonts->AddFontFromFileTTF(fa_path.c_str(), iconFontSize, &icons_config, icons_ranges );
 	ImGui::GetIO().Fonts->Build();
 }
+
+YAMP::~YAMP()
+{
+	m_Player.Stop();
+}
