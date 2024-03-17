@@ -1,7 +1,7 @@
 #pragma once
 #include <imgui.h>
 #include "Modal.hpp"
-#include "Playlist.h"
+#include "Playlist.hpp"
 
 class AlbumInfoModal : Modal
 {

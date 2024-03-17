@@ -1,5 +1,5 @@
-#include "YAMP.h"
-#include "Log.h"
+#include "YAMP.hpp"
+#include "Log.hpp"
 #include "Compare.hpp"
 #include <iostream>
 #include <Panels/Modals.hpp>

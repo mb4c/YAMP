@@ -2,7 +2,7 @@
 #include <imgui.h>
 #include <memory>
 #include "Modal.hpp"
-#include "Player.h"
+#include "Player.hpp"
 
 
 class LibraryInfoModal : Modal

@@ -1,6 +1,6 @@
 #pragma once
 #include "Modal.hpp"
-#include "Song.h"
+#include "Song.hpp"
 
 class TrackInfoModal : Modal
 {

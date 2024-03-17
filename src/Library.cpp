@@ -1,4 +1,4 @@
-#include "Library.h"
+#include "Library.hpp"
 #include <curl/curl.h>
 #include <algorithm>
 using namespace nlohmann;

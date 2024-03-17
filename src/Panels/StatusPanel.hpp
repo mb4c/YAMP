@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Player.h>
-#include <Preferences.h>
+#include <Player.hpp>
+#include <Preferences.hpp>
 
 class StatusPanel
 {

@@ -8,7 +8,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <string>
-#include "Log.h"
+#include "Log.hpp"
 
 class Application
 {

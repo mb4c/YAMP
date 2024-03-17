@@ -1,4 +1,4 @@
-#include "YAMP.h"
+#include "YAMP.hpp"
 
 int main(int argc, char** argv)
 {

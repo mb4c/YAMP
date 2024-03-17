@@ -10,11 +10,11 @@
 #include <taglib/tag.h>
 #include <taglib/fileref.h>
 #include <nlohmann/json.hpp>
-#include "Song.h"
-#include "Playlist.h"
-#include "Log.h"
+#include "Song.hpp"
+#include "Playlist.hpp"
+#include "Log.hpp"
 
-#include "Utils.h"
+#include "Utils.hpp"
 #include "imgui_notify.h"
 
 

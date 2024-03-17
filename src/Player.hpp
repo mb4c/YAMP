@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
-#include "Library.h"
+#include "Library.hpp"
 #include <gst/gst.h>
 #include <gst/audio/streamvolume.h>
 #include <thread>

@@ -3,7 +3,7 @@
 
 #include <cstring>
 #include <imgui.h>
-#include "Playlist.h"
+#include "Playlist.hpp"
 
 class Compare
 {

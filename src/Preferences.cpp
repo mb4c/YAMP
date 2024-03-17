@@ -1,7 +1,7 @@
 #include <fstream>
-#include "Preferences.h"
+#include "Preferences.hpp"
 #include <nlohmann/json.hpp>
-#include "Log.h"
+#include "Log.hpp"
 using namespace nlohmann;
 
 void Preferences::Save()

@@ -1,7 +1,7 @@
 #include "AlbumInfoModal.hpp"
 
 #include <utility>
-#include "Utils.h"
+#include "Utils.hpp"
 
 void AlbumInfoModal::Render()
 {

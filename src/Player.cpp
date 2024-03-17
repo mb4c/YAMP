@@ -1,4 +1,4 @@
-#include "Player.h"
+#include "Player.hpp"
 
 void Player::Init(const std::string& filePath, bool startup)
 {
