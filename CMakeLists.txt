@@ -1,8 +1,10 @@
 ﻿cmake_minimum_required(VERSION 3.24)
-project(YAMP)
+project(YAMP VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
+configure_file(src/Config.h.in Config.h)
 
 find_package(spdlog REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -30,7 +32,8 @@ endif()
 
 
 include_directories(SYSTEM src/
-                    ${TAGLIB_INCLUDE_DIRS})
+        ${PROJECT_BINARY_DIR}
+        ${TAGLIB_INCLUDE_DIRS})
 
 
 file(GLOB PROJECT_HEADERS src/*.h src/*.hpp src/Panels/*.hpp)
