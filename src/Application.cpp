@@ -36,11 +36,6 @@ void Application::Run()
 //	Log::Trace("GLFW version: {}", glfwGetVersionString());
 	Log::Trace("GLFW version: {}", glfwGetVersionString());
 
-	m_Title.append(" ")
-	.append(std::to_string(YAMP_VERSION_MAJOR)).append(".")
-	.append(std::to_string(YAMP_VERSION_MINOR)).append(".")
-	.append(std::to_string(YAMP_VERSION_PATCH));
-
 	m_Window = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), nullptr, nullptr);
 
 	if (m_Window == nullptr)
