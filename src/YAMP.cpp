@@ -80,6 +80,7 @@ void YAMP::OnUpdate()
 	}
 
 	m_LibraryInfoModal.Render();
+	m_AboutModal.Render();
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(43.f / 255.f, 43.f / 255.f, 43.f / 255.f, 100.f / 255.f));
@@ -157,6 +158,13 @@ void YAMP::Dockspace()
                 }
 
                 PreferencesPanel();
+
+				if (ImGui::MenuItem("About"))
+				{
+					m_AboutModal.Open();
+				}
+
+
 
                 ImGui::EndMenuBar();
             }

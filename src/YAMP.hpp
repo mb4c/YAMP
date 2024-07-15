@@ -11,6 +11,7 @@
 #include <Application.hpp>
 #include "portable-file-dialogs.h"
 #include "LibraryInfoModal.hpp"
+#include "AboutModal.hpp"
 #include <filesystem>
 #include <Panels/StatusPanel.hpp>
 #include <Panels/ArtistsPanel.hpp>
@@ -58,7 +59,7 @@ private:
 	PlaylistsPanel m_PlaylistsPanel;
 
 	LibraryInfoModal m_LibraryInfoModal{"Library info"};
-
+	AboutModal m_AboutModal{"About"};
 	void PreferencesPanel();
 
 	void BuildFont();
