@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Modal.hpp"
+#include "Texture.hpp"
 
 class AboutModal : Modal
 {
@@ -11,4 +12,6 @@ public:
 	void Open();
 
 	void Render() override;
+private:
+	Texture m_Logo;
 };

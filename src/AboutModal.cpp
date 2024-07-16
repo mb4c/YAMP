@@ -1,11 +1,15 @@
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
 #include "AboutModal.hpp"
+#include "Texture.hpp"
 #include <Utils.hpp>
 #include <Config.h>
-
 void AboutModal::Open()
 {
 	Modal::Open();
+
+	if (!m_Logo.IsValid())
+		m_Logo = Texture::LoadTextureFromFile("res/yamp.png");
 }
 
 void AboutModal::Render()
@@ -21,7 +25,9 @@ void AboutModal::Render()
 	if (ImGui::BeginPopupModal(m_Name.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 
-		//TODO: show logo above app name
+		ImGui::SetCursorPosX((ImGui::GetWindowSize().x - 128) * 0.5f);
+		ImGui::Image((void*) (intptr_t) m_Logo.id, ImVec2(128, 128));
+		ImGui::NewLine();
 		TextCentered("YAMP");
 		ImGui::NewLine();
 		std::string version;
