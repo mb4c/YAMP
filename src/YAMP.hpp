@@ -49,6 +49,7 @@ private:
 	SearchProps m_SearchProps;
 
 	Themes m_Themes;
+	ImGuiStyle m_Style;
 
 	void Dockspace();
 

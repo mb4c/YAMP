@@ -28,6 +28,9 @@ void YAMP::OnInit()
 	m_Themes.ScanThemes();
 	m_Themes.LoadThemeFromName(m_Preferences.m_Theme);
 
+	m_Style = ImGui::GetStyle();
+	ImGui::GetStyle().ScaleAllSizes(m_Preferences.m_Scale);
+
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -176,6 +179,17 @@ void YAMP::PreferencesPanel()
 {
     if (ImGui::BeginPopupModal("Preferences",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
+		ImGui::Text("UI Scale");
+		ImGui::SameLine();
+		if (ImGui::DragFloat("##scale", &m_Preferences.m_Scale, 0.01, 0.1, 4.0))
+		{
+			if (m_Preferences.m_Scale <= 0)
+				m_Preferences.m_Scale = 0.1;
+
+			ImGui::GetStyle() = m_Style;
+			ImGui::GetStyle().ScaleAllSizes(m_Preferences.m_Scale);
+		}
+
 		ImGui::Text("FontSize");
 		ImGui::SameLine();
         ImGui::InputFloat("##font", &m_Preferences.m_FontSize);
