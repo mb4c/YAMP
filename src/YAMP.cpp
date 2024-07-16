@@ -179,7 +179,7 @@ void YAMP::PreferencesPanel()
 {
     if (ImGui::BeginPopupModal("Preferences",  nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
-		ImGui::Text("UI Scale");
+		ImGui::Text("UI scale");
 		ImGui::SameLine();
 		if (ImGui::DragFloat("##scale", &m_Preferences.m_Scale, 0.01, 0.1, 4.0))
 		{
@@ -190,7 +190,7 @@ void YAMP::PreferencesPanel()
 			ImGui::GetStyle().ScaleAllSizes(m_Preferences.m_Scale);
 		}
 
-		ImGui::Text("FontSize");
+		ImGui::Text("Font size");
 		ImGui::SameLine();
         ImGui::InputFloat("##font", &m_Preferences.m_FontSize);
 		ImGui::Text("Library path");
