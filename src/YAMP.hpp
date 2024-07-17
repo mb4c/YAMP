@@ -58,6 +58,9 @@ private:
 	AlbumPanel m_AlbumPanel;
 	TracksPanel m_TracksPanel;
 	PlaylistsPanel m_PlaylistsPanel;
+	void DrawStatusPanel();
+	bool m_Holding = false;
+	bool m_Repeat = false;
 
 	LibraryInfoModal m_LibraryInfoModal{"Library info"};
 	AboutModal m_AboutModal{"About"};

@@ -50,14 +50,13 @@ void YAMP::OnInit()
 void YAMP::OnUpdate()
 {
 	Dockspace();
-	m_StatusPanel.RenderPanel(m_Player);
-
-	if (m_ShowArtistPanel)
-		m_ArtistPanel.RenderPanel(m_Player, m_FilteredAlbums, m_SearchProps);
-
-	if (m_ShowAlbumPanel)
-		m_AlbumPanel.RenderPanel(m_Player, m_FilteredAlbums, m_FilteredSongs, m_PlaylistClicked, m_ShouldFilterTracks, m_SearchProps);
-
+	DrawStatusPanel();
+//	if (m_ShowArtistPanel)
+//		m_ArtistPanel.RenderPanel(m_Player, m_FilteredAlbums, m_SearchProps);
+//
+//	if (m_ShowAlbumPanel)
+//		m_AlbumPanel.RenderPanel(m_Player, m_FilteredAlbums, m_FilteredSongs, m_PlaylistClicked, m_ShouldFilterTracks, m_SearchProps);
+//
 	if (m_ShowTracksPanel)
 		m_TracksPanel.RenderPanel(m_Player, m_FilteredSongs, m_Playlist, m_SelectedPlaylist, m_PlaylistClicked, m_ShouldFilterTracks);
 
@@ -285,3 +284,133 @@ YAMP::~YAMP()
 {
 	m_Player.Stop();
 }
+
+void YAMP::DrawStatusPanel()
+{
+	ImGui::Begin("Status");
+	TextCentered(m_Player.m_CurrentSongTitle);
+	float originalPadding = ImGui::GetStyle().FramePadding.x;
+	float buttonPadding = originalPadding + 4.0f;
+	float sliderPadding = buttonPadding/4;
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,{buttonPadding, buttonPadding});
+	if(ImGui::Button(ICON_FA_BACKWARD_STEP))
+	{
+		m_Player.Prev();
+	}
+	ImGui::SameLine();
+
+	if(ImGui::Button(m_Player.m_IsPaused ? ICON_FA_PLAY : ICON_FA_PAUSE))
+	{
+		if(m_Player.m_IsPaused)
+			m_Player.Play();
+		else
+			m_Player.Pause();
+
+	}
+
+	ImGui::SameLine();
+	if(ImGui::Button(ICON_FA_FORWARD_STEP))
+	{
+		m_Player.Next();
+	}
+	ImGui::SameLine();
+	std::string timeStr = SecondsToTime(m_Player.GetCursorInSeconds());
+	timeStr += " / " + SecondsToTime(m_Player.GetLengthInSeconds());
+	ImGui::Text("%s", timeStr.c_str());
+	ImGui::SameLine();
+	ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.75f);
+
+	double cursor = (double)m_Player.GetCursor() / (double)m_Player.GetLength();
+	static double min = 0;
+	static double max = 1;
+
+	if (m_Player.GetEOS())
+	{
+		if (m_Repeat)
+			m_Player.SetCursor(0);
+		else
+			m_Player.Next();
+	}
+
+	ImGui::PopStyleVar(1);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,{sliderPadding,sliderPadding});
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y + ImGui::GetStyle().ItemSpacing.y); //BUG: only works with ui scale set to 1.0
+	if(ImGui::SliderScalar("##Progress", ImGuiDataType_Double, &cursor, &min, &max, ""))
+	{
+		m_Holding = true;
+		m_Player.Pause();
+		m_Player.SetCursor(cursor * m_Player.GetLength());
+	}
+
+	if (m_Holding && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+	{
+		m_Player.Play();
+		m_Holding = false;
+	}
+
+	ImGui::SameLine();
+
+	ImGui::PopStyleVar(1);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,{buttonPadding, buttonPadding});
+	if (ImGui::Button(m_Player.m_IsMuted ? ICON_FA_VOLUME_XMARK : ICON_FA_VOLUME_HIGH))
+	{
+		if (m_Player.m_IsMuted)
+		{
+			m_Player.m_IsMuted = false;
+		}
+		else
+		{
+			m_Player.m_IsMuted = true;
+		}
+		m_Player.SetVolume(m_Player.m_Volume);
+	}
+
+	ImGui::PopStyleVar(1);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,{sliderPadding,sliderPadding});
+
+	ImGui::SameLine();
+	ImGui::PushItemWidth(-(ImGui::GetFontSize() * 2.0f + ImGui::GetStyle().ItemSpacing.x));
+
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision(0) << round(m_Player.m_Volume * 100) << "%%";
+
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + ImGui::GetStyle().FramePadding.y + ImGui::GetStyle().ItemSpacing.y);
+	if(ImGui::SliderFloat("##volume", &m_Player.m_Volume, 0.0f, 1.0f, ss.str().c_str()))
+	{
+		m_Player.SetVolume(m_Player.m_Volume);
+		m_Preferences.m_Volume = m_Player.m_Volume;
+
+	}
+	ImGui::SetItemUsingMouseWheel();
+	if (ImGui::IsItemHovered())
+	{
+		float wheel = ImGui::GetIO().MouseWheel;
+		if (wheel)
+		{
+			if (ImGui::IsItemActive())
+			{
+				ImGui::ClearActiveID();
+			}
+			else
+			{
+				m_Player.m_Volume += wheel * 0.05f;
+				m_Player.m_Volume = std::clamp(m_Player.m_Volume, 0.0f, 1.0f);
+				m_Player.SetVolume(m_Player.m_Volume);
+				m_Preferences.m_Volume = m_Player.m_Volume;
+			}
+		}
+	}
+
+	ImGui::SameLine();
+	ImGui::PopStyleVar(1);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,{buttonPadding, buttonPadding});
+	if (ImGui::Button(m_Repeat ? ICON_FA_ARROW_RIGHT : ICON_FA_REPEAT))
+	{
+		m_Repeat = !m_Repeat;
+	}
+	ImGui::PopStyleVar(1);
+
+	ImGui::End();
+}
+
+
