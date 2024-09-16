@@ -24,7 +24,7 @@ bool Compare::CompareSong(const Song &lhs, const Song &rhs, ImGuiTableSortSpecs 
 		switch (sort_spec->ColumnUserID)
 		{
 			case ColumnID_Track:        delta = (lhs.track - rhs.track);                			break;
-			case ColumnID_Name:         delta = (strcmp(lhs.title.c_str(), rhs.title.c_str()));     break;
+			case ColumnID_Title:        delta = (strcmp(lhs.title.c_str(), rhs.title.c_str()));    	break;
 			case ColumnID_Artist:       delta = (strcmp(lhs.artist.c_str(), rhs.artist.c_str()));  	break;
 			case ColumnID_Album:    	delta = (strcmp(lhs.album.c_str(), rhs.album.c_str()));   	break;
 			case ColumnID_Genre:    	delta = (strcmp(lhs.genre.c_str(), rhs.genre.c_str()));   	break;
@@ -33,7 +33,10 @@ bool Compare::CompareSong(const Song &lhs, const Song &rhs, ImGuiTableSortSpecs 
 			default: IM_ASSERT(0); break;
 		}
 
-		return sort_spec->SortDirection == ImGuiSortDirection_Descending ? (delta > 0) : (delta < 0);
+		if (delta != 0)
+		{
+			return sort_spec->SortDirection == ImGuiSortDirection_Descending ? (delta > 0) : (delta < 0);
+		}
 	}
-	return (lhs.track - rhs.track);
+	return false;
 }

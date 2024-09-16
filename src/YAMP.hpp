@@ -12,13 +12,13 @@
 #include "portable-file-dialogs.h"
 #include "LibraryInfoModal.hpp"
 #include "AboutModal.hpp"
+#include "TrackInfoModal.hpp"
 #include <filesystem>
 #include <Panels/StatusPanel.hpp>
 #include <Panels/ArtistsPanel.hpp>
 
 #include <Filter.hpp>
 #include <Panels/AlbumPanel.hpp>
-#include <Panels/TracksPanel.hpp>
 #include <Panels/PlaylistsPanel.hpp>
 
 
@@ -53,12 +53,11 @@ private:
 
 	void Dockspace();
 
-	StatusPanel m_StatusPanel{&m_Preferences};
-	ArtistsPanel m_ArtistPanel{};
-	AlbumPanel m_AlbumPanel;
-	TracksPanel m_TracksPanel;
-	PlaylistsPanel m_PlaylistsPanel;
+	ImGuiTableSortSpecs* m_TracksSortSpecs = nullptr;
+	TrackInfoModal m_TrackInfoModal{"Track info"};
+
 	void DrawStatusPanel();
+	void DrawTracksPanel();
 	bool m_Holding = false;
 	bool m_Repeat = false;
 

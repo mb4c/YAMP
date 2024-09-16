@@ -12,7 +12,7 @@ public:
 	enum ColumnID
 	{
 		ColumnID_Track,
-		ColumnID_Name,
+		ColumnID_Title,
 		ColumnID_Artist,
 		ColumnID_Album,
 		ColumnID_Genre,
