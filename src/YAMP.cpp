@@ -42,8 +42,9 @@ void YAMP::OnInit()
 	m_Player.m_Volume = m_Preferences.m_Volume;
 	m_Player.SetVolume(m_Preferences.m_Volume);
 
-	m_ArtistPanel.Init(m_Player, m_FilteredAlbums, m_SearchProps);
-	m_AlbumPanel.Init(m_ShouldFilterTracks, m_FilteredAlbums, m_SearchProps, m_Player.m_Library.m_Songs);
+	m_SearchProps.searchArtists = Search(m_SearchProps.artistSearchbar, m_Player.m_Library.m_Artists);
+	Filter::FilterAlbum(m_Player, m_FilteredAlbums, m_SearchProps.searchAlbums, m_SearchProps.albumSearchbar);
+
 	m_ShouldFilterTracks = true;
 }
 
@@ -51,17 +52,15 @@ void YAMP::OnUpdate()
 {
 	Dockspace();
 	DrawStatusPanel();
-//	if (m_ShowArtistPanel)
-//		m_ArtistPanel.RenderPanel(m_Player, m_FilteredAlbums, m_SearchProps);
-//
-//	if (m_ShowAlbumPanel)
-//		m_AlbumPanel.RenderPanel(m_Player, m_FilteredAlbums, m_FilteredSongs, m_PlaylistClicked, m_ShouldFilterTracks, m_SearchProps);
-//
+	if (m_ShowArtistPanel)
+		DrawArtistPanel();
+	if (m_ShowAlbumPanel)
+		DrawAlbumPanel();
 	if (m_ShowTracksPanel)
 		DrawTracksPanel();
 
 	if (m_ShowPlaylistsPanel)
-		m_PlaylistsPanel.RenderPanel(m_Player, m_SelectedPlaylist, m_PlaylistClicked, m_ShouldFilterTracks);
+		DrawPlaylistPanel();
 
 	if (m_ShowPreferencesPanel)
 		PreferencesPanel();
@@ -415,13 +414,9 @@ void YAMP::DrawStatusPanel()
 
 void YAMP::DrawTracksPanel()
 {
-	static const ImGuiTableFlags m_PanelFlag =
-			ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortTristate
-			| ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody
-			| ImGuiTableFlags_ScrollY;
-	ImGui::Begin("Tracks");
+	ImGui::Begin("Track");
 
-	if(ImGui::BeginTable("Tracks", 6, m_PanelFlag))
+	if(ImGui::BeginTable("Track", 6, m_PanelFlags))
 	{
 		ImGui::TableSetupColumn("Track", ImGuiTableColumnFlags_DefaultSort, 0.0f, Compare::ColumnID_Track);
 		ImGui::TableSetupColumn("Title", ImGuiTableColumnFlags_None, 0.0f, Compare::ColumnID_Title);
@@ -543,6 +538,331 @@ void YAMP::DrawTracksPanel()
 				ImGui::Text("%s", song->genre.c_str());
 				ImGui::TableNextColumn();
 				ImGui::Text("%d", song->year);
+				ImGui::PopID();
+			}
+		ImGui::EndTable();
+	}
+	ImGui::End();
+}
+
+void YAMP::DrawAlbumPanel()
+{
+	ImGui::Begin("Album");
+
+	ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x * 2);
+	if (ImGui::InputTextWithHint("##artistsearchbar", "Search...", &m_SearchProps.albumSearchbar))
+		m_SearchProps.searchAlbums = Search(m_SearchProps.albumSearchbar, m_FilteredAlbums);
+
+	if (ImGui::BeginTable("Album", 1, m_PanelFlags))
+	{
+		ImGui::TableSetupColumn("Album", ImGuiTableColumnFlags_DefaultSort);
+		ImGui::TableHeadersRow();
+
+		if (ImGuiTableSortSpecs* sorts_specs = ImGui::TableGetSortSpecs())
+			if (sorts_specs->SpecsDirty)
+			{
+				if (m_SearchProps.searchAlbums.size() > 1)
+					std::sort(m_SearchProps.searchAlbums.begin(), m_SearchProps.searchAlbums.end(), [&sorts_specs](const std::string& lhs, const std::string& rhs)
+					{
+						if (sorts_specs->Specs == nullptr)
+						{
+							return false;
+						}
+						return Compare::CompareString(lhs, rhs, sorts_specs->Specs->SortDirection == ImGuiSortDirection_Descending);
+					});
+
+				sorts_specs->SpecsDirty = false;
+			}
+
+
+		ImGui::PushID("All");
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::Selectable("All", "", ImGuiSelectableFlags_SpanAllColumns);
+		if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+		{
+			m_Player.m_Library.m_SelectedAlbum = "All";
+			m_PlaylistClicked = false;
+
+			m_ShouldFilterTracks = true;
+		}
+		ImGui::PopID();
+
+		ImGuiListClipper clipper;
+		clipper.Begin(m_SearchProps.searchAlbums.size());
+		while (clipper.Step())
+			for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; row_n++)
+			{
+				std::string album = m_SearchProps.searchAlbums[row_n];
+				ImGui::PushID(album.c_str());
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				bool selected = album == m_Player.m_Library.m_SelectedAlbum;
+
+				ImGui::Selectable(album.c_str(), selected, ImGuiSelectableFlags_SpanAllColumns);
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+				{
+					m_Player.m_Library.m_SelectedAlbum = album;
+					m_PlaylistClicked = false;
+
+					m_ShouldFilterTracks = true;
+				}
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+				{
+					ImGui::OpenPopup("AlbumPopup");
+				}
+				bool popup = false;
+
+				if (ImGui::BeginPopup("AlbumPopup"))
+				{
+					if (ImGui::BeginMenu("Add to playlist"))
+					{
+						if (ImGui::MenuItem("Create new..."))
+						{
+							popup = true;
+						}
+
+						for (auto& playlist: m_Player.m_Library.m_Playlists)
+						{
+							if (ImGui::MenuItem(playlist.name.c_str()))
+							{
+								AddAlbumToPlaylist(m_Player, &playlist, album);
+								m_Player.m_Library.SavePlaylists();
+							}
+						}
+						ImGui::EndMenu();
+					}
+					if (ImGui::MenuItem("Open in file explorer"))
+					{
+						OpenInFileExplorer(GetSongsFromAlbumName(m_SearchProps.searchAlbums[row_n], m_Player)[0].path);
+					}
+					if (ImGui::MenuItem("Info"))
+					{
+						m_AlbumInfo.m_Playlist = Playlist::GetPlaylistFromAlbumName(m_SearchProps.searchAlbums[row_n], m_Player.m_Library.m_Songs);
+						m_AlbumInfo.Open(Playlist::GetPlaylistFromAlbumName(m_SearchProps.searchAlbums[row_n], m_Player.m_Library.m_Songs));
+					}
+
+					ImGui::EndPopup();
+				}
+
+				m_AlbumInfo.Render();
+				Modals::OpenNewPlaylistModal(row_n, popup, true, m_Player, m_NewPlayListName, m_FilteredSongs);
+
+				ImGui::PopID();
+			}
+		ImGui::EndTable();
+	}
+	ImGui::End();
+}
+
+void YAMP::AddAlbumToPlaylist(Player& player, Playlist* playlist, const std::string& albumName)
+{
+	std::vector<Song> songs = GetSongsFromAlbumName(albumName, player);
+
+	for (const auto& song: songs)
+	{
+		playlist->songs.push_back(song);
+		playlist->duration += song.duration;
+	}
+}
+
+std::vector<Song> YAMP::GetSongsFromAlbumName(const std::string& name, Player& player)
+{
+	std::vector<Song> songs;
+
+	for (auto& song: player.m_Library.m_Songs)
+	{
+		if (song.album == name)
+		{
+			songs.push_back(song);
+		}
+	}
+
+	return songs;
+}
+
+void YAMP::DrawArtistPanel()
+{
+	ImGui::Begin("Artist");
+
+	ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - ImGui::GetStyle().WindowPadding.x * 2);
+	if (ImGui::InputTextWithHint("##artistsearchbar", "Search...", &m_SearchProps.artistSearchbar))
+		m_SearchProps.searchArtists = Search(m_SearchProps.artistSearchbar, m_Player.m_Library.m_Artists);
+
+	if (ImGui::BeginTable("Artist", 1, m_PanelFlags))
+	{
+		ImGui::TableSetupColumn("Artist", ImGuiTableColumnFlags_DefaultSort);
+		ImGui::TableHeadersRow();
+
+		if (ImGuiTableSortSpecs* sorts_specs = ImGui::TableGetSortSpecs())
+			if (sorts_specs->SpecsDirty)
+			{
+				if (m_SearchProps.searchArtists.size() > 1)
+					std::sort(m_SearchProps.searchArtists.begin(), m_SearchProps.searchArtists.end(), [&sorts_specs](const std::string& lhs, const std::string& rhs)
+					{
+						if (sorts_specs->Specs == nullptr)
+						{
+							return false;
+						}
+						return Compare::CompareString(lhs, rhs, sorts_specs->Specs->SortDirection == ImGuiSortDirection_Descending);
+					});
+
+				sorts_specs->SpecsDirty = false;
+			}
+
+		ImGui::PushID("All");
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::Selectable("All", "All" == m_Player.m_Library.m_SelectedArtist, ImGuiSelectableFlags_SpanAllColumns);
+		if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+		{
+			m_Player.m_Library.m_SelectedArtist = "All";
+			Filter::FilterAlbum(m_Player, m_FilteredAlbums, m_SearchProps.searchAlbums, m_SearchProps.albumSearchbar);
+		}
+		ImGui::PopID();
+
+		ImGuiListClipper clipper;
+		clipper.Begin(m_SearchProps.searchArtists.size());
+		while (clipper.Step())
+		{
+			for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; row_n++)
+			{
+				std::string artist = m_SearchProps.searchArtists[row_n];
+				ImGui::PushID(artist.c_str());
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				bool selected = artist == m_Player.m_Library.m_SelectedArtist;
+				ImGui::Selectable(artist.c_str(), selected, ImGuiSelectableFlags_SpanAllColumns);
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+				{
+					m_Player.m_Library.m_SelectedArtist = artist;
+					Filter::FilterAlbum(m_Player, m_FilteredAlbums, m_SearchProps.searchAlbums, m_SearchProps.albumSearchbar);
+				}
+				ImGui::PopID();
+			}
+		}
+		ImGui::EndTable();
+	}
+
+	ImGui::End();
+}
+
+void YAMP::DrawPlaylistPanel()
+{
+	ImGui::Begin("Playlist");
+
+	if (ImGui::BeginTable("Playlist", 1, m_PanelFlags))
+	{
+		ImGui::TableSetupColumn("Playlist", ImGuiTableColumnFlags_DefaultSort);
+		ImGui::TableHeadersRow();
+
+		if (ImGuiTableSortSpecs* sorts_specs = ImGui::TableGetSortSpecs())
+			if (sorts_specs->SpecsDirty)
+			{
+				if (m_Player.m_Library.m_Playlists.size() > 1)
+					std::sort(m_Player.m_Library.m_Playlists.begin(), m_Player.m_Library.m_Playlists.end(), Compare::ComparePlaylist);
+				sorts_specs->SpecsDirty = false;
+			}
+
+		bool playlistRenamePopup = false;
+		bool playlistInfoPopup = false;
+
+		ImGuiListClipper clipper;
+		clipper.Begin(m_Player.m_Library.m_Playlists.size());
+		while (clipper.Step())
+			for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; row_n++)
+			{
+				Playlist playlist = m_Player.m_Library.m_Playlists[row_n];
+				ImGui::PushID(playlist.name.c_str());
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				bool selected = false;
+				ImGui::Selectable(playlist.name.c_str(), selected, ImGuiSelectableFlags_SpanAllColumns);
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+				{
+					m_SelectedPlaylist = m_Player.m_Library.m_Playlists[row_n];
+					m_PlaylistClicked = true;
+					m_ShouldFilterTracks = true;
+				}
+
+				Reorder(m_Player.m_Library.m_Playlists, row_n);
+
+				if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+				{
+					ImGui::OpenPopup("playlistpopup");
+				}
+
+				if (ImGui::BeginPopup("playlistpopup"))
+				{
+					if (ImGui::Selectable("Remove playlist"))
+					{
+						if (m_SelectedPlaylist.name == m_Player.m_Library.m_Playlists.at(row_n).name)
+						{
+							m_PlaylistClicked = false;
+						}
+
+						m_Player.m_Library.m_Playlists.erase(m_Player.m_Library.m_Playlists.begin() + row_n);
+						m_Player.m_Library.SavePlaylists();
+					}
+
+					if (ImGui::Selectable("Rename"))
+					{
+						playlistRenamePopup = true;
+						m_NewPlayListName = m_Player.m_Library.m_Playlists.at(row_n).name;
+					}
+
+					if (ImGui::Selectable("Info"))
+					{
+						playlistInfoPopup = true;
+					}
+
+					ImGui::EndPopup();
+				}
+
+				if (playlistRenamePopup)
+				{
+					ImGui::OpenPopup("Rename playlist");
+					playlistRenamePopup = false;
+				}
+				if (playlistInfoPopup)
+				{
+					ImGui::OpenPopup("Info");
+					playlistInfoPopup = false;
+				}
+
+				if (ImGui::BeginPopupModal("Rename playlist", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					ImGui::InputText("Name", &m_NewPlayListName);
+
+					if (ImGui::Button("Rename"))
+					{
+						m_Player.m_Library.m_Playlists.at(row_n).name = m_NewPlayListName;
+						m_Player.m_Library.SavePlaylists();
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::SameLine();
+					if (ImGui::Button("Cancel"))
+					{
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndPopup();
+				}
+
+				if (ImGui::BeginPopupModal("Info", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					ImGui::Text("Playlist name: %s", playlist.name.c_str());
+					ImGui::Text("Songs: %zu", playlist.songs.size());
+					ImGui::Text("Total duration: %s", SecondsToTimeHMS(playlist.duration).c_str());
+
+					ImGui::SameLine();
+					if (ImGui::Button("Close"))
+					{
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndPopup();
+				}
 				ImGui::PopID();
 			}
 		ImGui::EndTable();

@@ -13,13 +13,10 @@
 #include "LibraryInfoModal.hpp"
 #include "AboutModal.hpp"
 #include "TrackInfoModal.hpp"
+#include "AlbumInfoModal.hpp"
 #include <filesystem>
 #include <Panels/StatusPanel.hpp>
-#include <Panels/ArtistsPanel.hpp>
-
 #include <Filter.hpp>
-#include <Panels/AlbumPanel.hpp>
-#include <Panels/PlaylistsPanel.hpp>
 
 
 class YAMP : public Application
@@ -55,9 +52,22 @@ private:
 
 	ImGuiTableSortSpecs* m_TracksSortSpecs = nullptr;
 	TrackInfoModal m_TrackInfoModal{"Track info"};
+	AlbumInfoModal m_AlbumInfo{"Album info"};
+
+	static const ImGuiTableFlags m_PanelFlags =
+			ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Sortable | ImGuiTableFlags_SortTristate
+			| ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody
+			| ImGuiTableFlags_ScrollY;
 
 	void DrawStatusPanel();
 	void DrawTracksPanel();
+	void DrawAlbumPanel();
+	void DrawArtistPanel();
+	void DrawPlaylistPanel();
+
+	static void AddAlbumToPlaylist(Player& player, Playlist *playlist, const std::string& albumName);
+	static std::vector<Song> GetSongsFromAlbumName(const std::string& name, Player& player);
+
 	bool m_Holding = false;
 	bool m_Repeat = false;
 
