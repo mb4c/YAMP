@@ -170,7 +170,44 @@ void YAMP::Dockspace()
                 ImGui::EndMenuBar();
             }
 
+	static auto firstTime = true;
+	if (firstTime)
+	{
+		firstTime = false;
+		DockBuilder();
+	}
+
+
         ImGui::End();
+}
+
+void YAMP::DockBuilder()
+{
+	ImGuiWindowFlags dockspace_flags = ImGuiWindowFlags_MenuBar;
+	dockspace_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	dockspace_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+
+	ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
+	ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+	ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+
+	auto dock_id_status = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.14f, nullptr, &dockspace_id);
+	auto dock_id_tracks = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Up, 1.0f, nullptr, &dock_id_status);
+	auto dock_id_playlist = ImGui::DockBuilderSplitNode(dock_id_tracks, ImGuiDir_Left, 0.2f, nullptr, &dock_id_tracks);
+	auto dock_id_artist = ImGui::DockBuilderSplitNode(dock_id_tracks, ImGuiDir_Up, 0.5f, nullptr, &dock_id_tracks);
+	auto dock_id_album = ImGui::DockBuilderSplitNode(dock_id_artist, ImGuiDir_Right, 0.5f, nullptr, &dock_id_artist);
+
+	ImGui::DockBuilderDockWindow("Status", dock_id_status);
+	ImGui::DockBuilderDockWindow("Track", dock_id_tracks);
+	ImGui::DockBuilderDockWindow("Playlist", dock_id_playlist);
+	ImGui::DockBuilderDockWindow("Artist", dock_id_artist);
+	ImGui::DockBuilderDockWindow("Album", dock_id_album);
+
+	ImGui::DockBuilderFinish(dockspace_id);
 }
 
 void YAMP::PreferencesPanel()

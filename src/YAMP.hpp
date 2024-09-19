@@ -49,6 +49,7 @@ private:
 	ImGuiStyle m_Style;
 
 	void Dockspace();
+	void DockBuilder();
 
 	ImGuiTableSortSpecs* m_TracksSortSpecs = nullptr;
 	TrackInfoModal m_TrackInfoModal{"Track info"};
