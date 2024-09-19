@@ -1,5 +1,6 @@
 #include <imgui.h>
 #include "TrackInfoModal.hpp"
+#include "Utils.hpp"
 
 void TrackInfoModal::Render()
 {
@@ -17,7 +18,7 @@ void TrackInfoModal::Render()
 		ImGui::Text("Year: %u", m_Song.year);
 		ImGui::Text("Track: %u", m_Song.track);
 		ImGui::Text("Genre: %s", m_Song.genre.c_str());
-		ImGui::Text("Duration: %d", m_Song.duration);
+		ImGui::Text("Duration: %s", SecondsToTime(m_Song.duration).c_str());
 		ImGui::Text("Path: %s", m_Song.path.string().c_str());
 
 		if (ImGui::Button("Close"))
