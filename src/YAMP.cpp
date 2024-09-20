@@ -4,6 +4,8 @@
 #include <iostream>
 #include <Panels/Modals.hpp>
 
+#include <roboto.cpp>
+#include <fa_solid_900.cpp>
 
 YAMP::YAMP(const std::string &title, int width, int height, bool vsync, int argc, char** argv) : Application(title, width, height, vsync, argc, argv)
 {
@@ -300,19 +302,17 @@ void YAMP::BuildFont()
 	builder.AddRanges(fontRange);
 	builder.BuildRanges(&ranges);
 
-	m_Font = io.Fonts->AddFontFromFileTTF("res/Roboto-Medium.ttf", m_Preferences.m_FontSize, nullptr, ranges.Data);
+	m_Font = io.Fonts->AddFontFromMemoryCompressedTTF(roboto_compressed_data, roboto_compressed_size, m_Preferences.m_FontSize, nullptr, ranges.Data);
 
 	float iconFontSize = m_Preferences.m_FontSize * 1.5f * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
 
 	// Merge in icons from Font Awesome
-	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+	static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
 	ImFontConfig icons_config;
 	icons_config.MergeMode = true;
 	icons_config.PixelSnapH = true;
 	icons_config.GlyphMinAdvanceX = iconFontSize;
-	std::string fa_path;
-	fa_path = "res/"  FONT_ICON_FILE_NAME_FAS;
-	io.Fonts->AddFontFromFileTTF(fa_path.c_str(), iconFontSize, &icons_config, icons_ranges );
+	io.Fonts->AddFontFromMemoryCompressedTTF(fa_solid_900_compressed_data, fa_solid_900_compressed_size, iconFontSize, &icons_config, icons_ranges);
 	ImGui::GetIO().Fonts->Build();
 }
 
