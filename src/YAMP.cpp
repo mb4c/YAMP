@@ -553,7 +553,17 @@ void YAMP::DrawTracksPanel()
 						{
 							m_SelectedPlaylist.duration -= m_SelectedPlaylist.songs.at(row_n).duration;
 							m_SelectedPlaylist.songs.erase(m_SelectedPlaylist.songs.begin() + row_n);
+
+							for (auto & playlist : m_Player.m_Library.m_Playlists)
+							{
+								if (playlist.name == m_SelectedPlaylist.name)
+								{
+									playlist = m_SelectedPlaylist;
+								}
+							}
+
 							m_Player.m_Library.SavePlaylists();
+							m_Player.m_Library.LoadPlaylists();
 							m_ShouldFilterTracks = true;
 
 						}

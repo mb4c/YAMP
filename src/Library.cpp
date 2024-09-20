@@ -190,7 +190,7 @@ void Library::LoadPlaylists()
 //		SavePlaylists();
 		return;
 	}
-
+	m_Playlists.clear();
 	std::ifstream i("res/playlists.json");
 	json j;
 	i >> j;
