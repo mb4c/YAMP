@@ -200,10 +200,12 @@ void Library::LoadPlaylists()
 		Playlist pl;
 		pl.name = playlist["name"];
 		pl.duration = playlist["duration"];
-
-		for (const auto& song : playlist["songs"])
+		if (playlist.contains("songs"))
 		{
-			pl.songs.push_back(UUID2Song(song));
+			for (const auto& song: playlist["songs"])
+			{
+				pl.songs.push_back(UUID2Song(song));
+			}
 		}
 
 		m_Playlists.push_back(pl);
