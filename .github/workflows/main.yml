@@ -104,5 +104,5 @@ jobs:
           ${{ steps.strings.outputs.build-output-dir }}
           !${{ steps.strings.outputs.build-output-dir }}/vcpkg_installed
           !${{ steps.strings.outputs.build-output-dir }}/CMakeFiles
-        name: yamp_${{ matrix.os }}_${{ matrix.c_compiler }}
+        name: yamp-${{ matrix.os }}-${{ matrix.c_compiler }}
         compression-level: 9
