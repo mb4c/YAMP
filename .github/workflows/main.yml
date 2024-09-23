@@ -101,8 +101,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         path: |
-          ${{ steps.strings.outputs.build-output-dir }}
-          !${{ steps.strings.outputs.build-output-dir }}/vcpkg_installed
-          !${{ steps.strings.outputs.build-output-dir }}/CMakeFiles
+          ${{ steps.strings.outputs.build-output-dir }}/YAMP
+          ${{ steps.strings.outputs.build-output-dir }}/res
         name: yamp-${{ matrix.os }}-${{ matrix.c_compiler }}
         compression-level: 9
