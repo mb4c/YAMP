@@ -1,5 +1,5 @@
 # YAMP
-YAMP is a cross-platform music player written in C++
+YAMP is a music player written in C++
 
 <img src="YAMP.png">
 
@@ -8,9 +8,6 @@ YAMP is a cross-platform music player written in C++
 - Playlists
 - Themes
 - Unicode support
-
-# Planned Features
-- Lyrics
 
 # Building
 
