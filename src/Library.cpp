@@ -220,6 +220,7 @@ Song Library::UUID2Song(const std::string& id)
 		if(song.uuid == id)
 			return song;
 	}
+	return {};
 }
 
 bool Library::GetMetadataFromTitle(const std::string& filename, Song& song)
