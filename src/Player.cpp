@@ -90,6 +90,9 @@ uint64_t Player::GetCursor()
 
 void Player::SetCursor(uint64_t cursor)
 {
+	if (cursor == 0)
+		m_Data.eos = false;
+
 	gst_element_seek_simple(m_Playbin, GST_FORMAT_TIME,
 							static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT), cursor);
 }
